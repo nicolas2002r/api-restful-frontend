@@ -11,3 +11,58 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+/* Estilos personalizados para la Navbar */
+.navbar-custom {
+  background-color: #E6E7E6;
+}
+.line-wrapper {
+  background-color: #E6E7E6; /* Color de fondo gris claro */
+  padding: 0; /* Sin relleno superior o inferior */
+  width: 100%; /* Ocupar todo el ancho de la pantalla */
+}
+.navbar-separator {
+  height: 2px; /* Grosor de la línea */
+  background-color: #00A651; /* Color verde */
+  margin: 0 auto; /* Centramos la línea */
+  width: calc(100% - 40px); /* Dejamos 20px de margen a cada lado */
+  max-width: 1500px; /* Para que no se extienda indefinidamente en pantallas muy grandes */
+}
+.nav-center {
+  font-size: 1.2rem;
+}
+/*Logo CORHUILA para la Navbar*/
+.logo-Navbar {
+  width: 40px;
+  height: 40px;
+}
+
+/* Fondo verde claro */
+.background-container {
+  min-height: 100vh; /* Altura completa de la pantalla */
+  background: linear-gradient(to bottom, #E6E7E6 50%, #00A651 50%); /* Verde claro arriba, blanco abajo */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Caja blanca con bordes redondeados */
+.content-container {
+  background-color: white;
+  width: 80%;
+  max-width: 1200px;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  margin-top: -350px;
+}
+
+/* Texto centrado */
+h4 {
+  color: #000; /* Color negro */
+  font-size: 24px; /* Tamaño del texto */
+  margin: 0; /* Sin margen adicional */
+  padding-bottom: 10px; /* Espaciado en la parte inferior */
+  border-bottom: 2px solid #4caf50; /* Línea verde bajo el texto */
+  background-color: #FFFFFF;
+}

@@ -4,7 +4,6 @@ import Container from 'react-bootstrap/Container';
 import NavbarBootstrap from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import logo from "../imagenes/LOGO-CORHUILA.png";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../index.css';
 
@@ -14,7 +13,7 @@ export const Navbar = ({ title }) => {
       <NavbarBootstrap expand="lg" className="navbar-custom">
         <Container fluid>
           <NavbarBootstrap.Brand href="#home" className="d-flex align-items-center">
-            <img src={logo} alt="Logo" className="logo-Navbar d-block my-1" />
+            <img src="/imagenes/LOGO-CORHUILA.png" alt="Logo" className="logo-Navbar d-block my-1" />
           </NavbarBootstrap.Brand>
 
           <NavbarBootstrap.Toggle aria-controls="basic-navbar-nav" />

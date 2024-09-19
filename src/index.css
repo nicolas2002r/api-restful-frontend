@@ -36,7 +36,7 @@ code {
   height: 40px;
 }
 
-/* Fondo verde claro */
+/*Fondo general para las vistas*/
 .background-container {
   min-height: 100vh; /* Altura completa de la pantalla */
   background: linear-gradient(to bottom, #E6E7E6 50%, #00A651 50%); /* Verde claro arriba, blanco abajo */
@@ -54,9 +54,11 @@ code {
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: left;
-  margin-top: -350px;
+  margin-top: 50px;
+  height: 565px; /* Altura fija para el contenedor */
+  overflow-y: auto; /* Barra de desplazamiento vertical */
+  position: relative; /* Mantiene la posición relativa */
 }
-
 /* Texto centrado */
 h4 {
   color: #000; /* Color negro */
@@ -66,3 +68,77 @@ h4 {
   border-bottom: 2px solid #4caf50; /* Línea verde bajo el texto */
   background-color: #FFFFFF;
 }
+
+
+/*Etilos para dividir las columnas de registro y tabla*/
+.content-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+/*Darle estilo al formulario*/
+.form-column {
+  flex: 1;
+  margin-right: 20px;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+}
+
+.table-column {
+  flex: 2;
+}
+
+form div {
+  margin-bottom: 10px;
+}
+
+form input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 3px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+/* Contenedor de la tabla con barra de desplazamiento independiente */
+.table-column {
+  max-height: 430px; /* Define la altura máxima de la tabla */
+  overflow-x: auto;  /* Barra de desplazamiento horizontal */
+  margin-top: 20px;
+}
+/* Opcional: Personaliza la barra de desplazamiento */
+.content-container::-webkit-scrollbar, .table-column::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-container::-webkit-scrollbar-thumb, .table-column::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+input:focus {  
+  border: 1px solid #00A651; 
+  outline: none;
+}
+.form-group-custom {
+  position: relative; /* Asegúrate de que el contenedor tenga posición relativa */
+}
+
+.form-group-custom label {
+  transition: color 0.3s; /* Agrega una transición suave */
+}
+
+.form-group-custom:focus-within label {
+  color: #00A651; /* Cambia el color del label a verde cuando el input está enfocado */
+}
+.table-row {
+  transition: border 0.3s, box-shadow 0.3s; /* Transiciones suaves */
+}
+
+.table-row.selected {
+  border: 2px solid green; /* Color del borde */
+  box-shadow: 0 4px 8px rgba(0, 128, 0, 0.3); /* Sombra */
+  cursor: pointer; /* Cambia el cursor a pointer */
+}
+
+
+

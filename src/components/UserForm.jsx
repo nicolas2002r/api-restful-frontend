@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
-import logo from "../imagenes/LOGO-CORHUILA.png"; // Importación del Logo CORHUILA
 import { useAuth } from "../context/AuthContext"; // Importa el contexto de autenticación
 
 export const Userform = () => {
@@ -61,7 +60,7 @@ export const Userform = () => {
     <div className="position-fixed bottom-0 start-0 p-5 custom-bottom-margin" style={{ width: '30%' }}>
       <form onSubmit={handleSubmit} className="p-4 bg-light rounded shadow">
         <div className="text-center mb-4">
-          <img src={logo} alt="Logo" style={{ width: "150px" }} />
+          <img src="/imagenes/LOGO-CORHUILA.png" alt="Logo" style={{ width: "150px" }} />
         </div>
 
         <div className="mb-3">

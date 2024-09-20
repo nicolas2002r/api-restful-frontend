@@ -1,13 +1,12 @@
 import React from "react";
-import { Outlet, Link } from "react-router-dom";
 import Container from 'react-bootstrap/Container';
 import NavbarBootstrap from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../index.css';
+import { NavLink } from "react-router-dom";
 
-export const Navbar = ({ title }) => {
+export const Navbar = ({ title, links }) => {
   return (
     <>
       <NavbarBootstrap expand="lg" className="navbar-custom">
@@ -18,15 +17,22 @@ export const Navbar = ({ title }) => {
 
           <NavbarBootstrap.Toggle aria-controls="basic-navbar-nav" />
           <NavbarBootstrap.Collapse id="basic-navbar-nav" className="w-100">
-
-            {/* Contendrá lo que exista en UserRegistrationPage */}
             <Nav className="mx-auto justify-content-center align-items-center">
               <span className="nav-center">{title}</span>
+              {links && (
+                <Nav className="ms-auto">
+                  {links.map((link) => (
+                    <Nav.Link as={NavLink} to={link.path} key={link.path}>
+                      {link.name}
+                    </Nav.Link>
+                  ))}
+                </Nav>
+              )}
             </Nav>
 
             <Nav>
               <NavDropdown title="Perfil" id="basic-nav-dropdown" align="end">
-                <NavDropdown.Item as={Link} to="/Authentication">Cerrar sesión</NavDropdown.Item>
+                <NavDropdown.Item as={NavLink} to="/Authentication">Cerrar sesión</NavDropdown.Item>
               </NavDropdown>
             </Nav>
 

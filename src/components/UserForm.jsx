@@ -35,17 +35,31 @@ export const Userform = () => {
     
     // Autenticación de prueba: si idNumber y password son '1234', redirige a UserRegistration
     if (idNumber === '1234' && password === '1234') {
+      console.log("Autenticado como Administrador");
       console.log("Número de Identificación:", idNumber);
       console.log("Contraseña:", password);
       console.log("Recordarme:", remember);
-
+  
       // Realiza el login en el contexto
       login();
-
-      // Redirige a UserRegistration después de la autenticación de prueba
+  
+      // Redirige a la página de administrador o dashboard
       navigate("/UserRegistration");
+    } 
+    // Autenticación para el rol de Docente (usuario '5678')
+    else if (idNumber === '5678' && password === '5678') {
+      console.log("Autenticado como Docente");
+      console.log("Número de Identificación:", idNumber);
+      console.log("Contraseña:", password);
+      console.log("Recordarme:", remember);
+  
+      // Realiza el login en el contexto
+      login();
+  
+      // Redirige a la página de registro de usuarios
+      navigate("/AgendaDocente");
     } else {
-      // Manejo de autenticación fallida (puedes mostrar un mensaje de error aquí)
+      // Manejo de autenticación fallida (mensaje de error)
       alert("Número de identificación o contraseña incorrectos.");
     }
     // Resetea el estado del formulario

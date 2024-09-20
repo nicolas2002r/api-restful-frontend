@@ -15,6 +15,7 @@ code {
 .navbar-custom {
   background-color: #E6E7E6;
 }
+
 .line-wrapper {
   background-color: #E6E7E6; /* Color de fondo gris claro */
   padding: 0; /* Sin relleno superior o inferior */
@@ -135,9 +136,29 @@ input:focus {
 }
 
 .table-row.selected {
-  border: 2px solid green; /* Color del borde */
+  border: 2px solid #00A651; /* Color del borde */
   box-shadow: 0 4px 8px rgba(0, 128, 0, 0.3); /* Sombra */
   cursor: pointer; /* Cambia el cursor a pointer */
+}
+
+/*Estilos de la Navbar de AgendaDocente*/
+.nav-item-custom {
+  margin-right: 20px; /* Ajusta el espacio entre ítems */
+}
+
+.nav-item-custom:last-child {
+  margin-right: 0; /* Elimina el margen en el último ítem si es necesario */
+}
+
+/* index.css o tu archivo CSS */
+.navbar-custom .nav-link.active {
+  background-color: #00A651; /* Color verde para el ítem activo */
+  color: white; /* Cambia el color del texto a blanco para mejor contraste */
+  border-radius: 4px; /* Opcional: redondear las esquinas */
+}
+
+.navbar-custom .nav-link {
+  color: black; /* Color de texto predeterminado */
 }
 
 

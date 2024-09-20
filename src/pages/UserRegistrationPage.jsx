@@ -3,6 +3,7 @@ import { Navbar } from "../components/Navbar";
 import { Table } from 'reactstrap';
 import RegistrationForm from "../components/RegistrationForm";
 import '../index.css';
+import { MainLayout } from "../layouts/MainLayout";
 
 //Se define el componente
 export const UserRegistrationPage = () => {
@@ -24,16 +25,16 @@ export const UserRegistrationPage = () => {
     Correo: "",
     Rol: "Docente",
   };
-//Estado para controlar el formulario
+  //Estado para controlar el formulario
   const [form, setForm] = useState(initialFormState);
-//Indice de la fila que se está editando
+  //Indice de la fila que se está editando
   const [editIndex, setEditIndex] = useState(null);
 
-//Referencia para el formulario y la tabla
+  //Referencia para el formulario y la tabla
   const formRef = useRef(null);
   const tableRef = useRef(null);
 
-//Función para manejar cambios en el formulario
+  //Función para manejar cambios en el formulario
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -41,7 +42,7 @@ export const UserRegistrationPage = () => {
     });
   };
 
-//Funcion para el envío del formulario 
+  //Funcion para el envío del formulario 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (editIndex !== null) {
@@ -53,24 +54,24 @@ export const UserRegistrationPage = () => {
       setData([...data, form]);
     }
 
-// Restablecer el formulario después de agregar o editar un registro
+    // Restablecer el formulario después de agregar o editar un registro
     setForm(initialFormState);
   };
 
-// Función para manejar la edición de un registro
+  // Función para manejar la edición de un registro
   const handleEdit = (index) => {
-    setSelectedRowIndex(index); 
+    setSelectedRowIndex(index);
     setForm(data[index]);
     setEditIndex(index);
   };
 
-// Función para manejar la eliminación de un registro 
+  // Función para manejar la eliminación de un registro 
   const handleDelete = (index) => {
     setData(data.filter((_, i) => i !== index));
     setEditIndex(null);
     setForm(initialFormState); // Restablecer el formulario cuando se borra un registro
   };
-// Función para manejar clics fuera del formulario y la tabla
+  // Función para manejar clics fuera del formulario y la tabla
   const handleClickOutside = (e) => {
     // Verificamos si el clic ocurrió fuera del formulario y la tabla
     if (
@@ -84,7 +85,7 @@ export const UserRegistrationPage = () => {
       setSelectedRowIndex(null); // Desmarca la fila seleccionada
     }
   };
-// Efecto para añadir y limpiar el listener de clics
+  // Efecto para añadir y limpiar el listener de clics
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
     return () => {
@@ -95,10 +96,6 @@ export const UserRegistrationPage = () => {
 
   return (
     <>
-      <Navbar title="REGISTRO DE USUARIOS" />
-
-      <div className="background-container">
-        <div className="content-container">
           <div className="line-wrapper">
             <h4>{editIndex !== null ? "Editar Usuario" : "Formulario de registro"}</h4>
           </div>
@@ -126,25 +123,23 @@ export const UserRegistrationPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                {data.map((elemento, index) => (
-                  <tr
-                    key={index}
-                    className={`table-row ${selectedRowIndex === index ? 'selected' : ''}`} // Aplica la clase 'selected' solo a la fila seleccionada
-                    onClick={() => handleEdit(index)} // Al hacer clic, establece el índice de la fila seleccionada
-                  >
-                    <td>{elemento.Nombres}</td>
-                    <td>{elemento.Apellidos}</td>
-                    <td>{elemento.Cedula}</td>
-                    <td>{elemento.Correo}</td>
-                    <td>{elemento.Rol}</td>
-                  </tr>
+                  {data.map((elemento, index) => (
+                    <tr
+                      key={index}
+                      className={`table-row ${selectedRowIndex === index ? 'selected' : ''}`} // Aplica la clase 'selected' solo a la fila seleccionada
+                      onClick={() => handleEdit(index)} // Al hacer clic, establece el índice de la fila seleccionada
+                    >
+                      <td>{elemento.Nombres}</td>
+                      <td>{elemento.Apellidos}</td>
+                      <td>{elemento.Cedula}</td>
+                      <td>{elemento.Correo}</td>
+                      <td>{elemento.Rol}</td>
+                    </tr>
                   ))}
                 </tbody>
               </Table>
             </div>
           </div>
-        </div>
-      </div>
     </>
   );
 };

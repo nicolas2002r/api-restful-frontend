@@ -11,6 +11,22 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/*Estilos personalizados del boton de autenticación */
+.custom-rounded-btn {
+  border-radius: 15px;
+  border-color: #00A651;
+  padding: 10px 20px;
+  transition: background-color 0.3s ease, border-radius 0.3s ease;
+  background-color: #00A651;
+  color: #FFFFFF;
+}
+
+.custom-rounded-btn:hover {
+  background-color: #038a44; 
+  border-radius: 15px; 
+}
+
 /* Estilos personalizados para la Navbar */
 .navbar-custom {
   background-color: #E6E7E6;
@@ -49,7 +65,7 @@ code {
 /* Caja blanca con bordes redondeados */
 .content-container {
   background-color: white;
-  width: 80%;
+  width: 90%;
   max-width: 1200px;
   padding: 20px;
   border-radius: 15px;
@@ -70,6 +86,7 @@ h4 {
   background-color: #FFFFFF;
 }
 
+/*///ESTILOS DE REGISTRO DE USUARIO///*/
 
 /*Etilos para dividir las columnas de registro y tabla*/
 .content-wrapper {
@@ -80,7 +97,7 @@ h4 {
 /*Darle estilo al formulario*/
 .form-column {
   flex: 1;
-  margin-right: 20px;
+  margin-right: 10px;
   padding: 20px;
   background-color: #f7f7f7;
   border-radius: 10px;
@@ -101,13 +118,14 @@ form input {
   border-radius: 5px;
   border: 1px solid #ccc;
 }
+
 /* Contenedor de la tabla con barra de desplazamiento independiente */
 .table-column {
   max-height: 430px; /* Define la altura máxima de la tabla */
   overflow-x: auto;  /* Barra de desplazamiento horizontal */
   margin-top: 20px;
 }
-/* Opcional: Personaliza la barra de desplazamiento */
+/* barra de desplazamiento */
 .content-container::-webkit-scrollbar, .table-column::-webkit-scrollbar {
   width: 8px;
 }
@@ -141,7 +159,7 @@ input:focus {
   cursor: pointer; /* Cambia el cursor a pointer */
 }
 
-/*Estilos de la Navbar de AgendaDocente*/
+/*///NAVBAR AGENDADOCENTE///*/
 .nav-item-custom {
   margin-right: 20px; /* Ajusta el espacio entre ítems */
 }
@@ -150,7 +168,6 @@ input:focus {
   margin-right: 0; /* Elimina el margen en el último ítem si es necesario */
 }
 
-/* index.css o tu archivo CSS */
 .navbar-custom .nav-link.active {
   background-color: #00A651; /* Color verde para el ítem activo */
   color: white; /* Cambia el color del texto a blanco para mejor contraste */
@@ -161,5 +178,95 @@ input:focus {
   color: black; /* Color de texto predeterminado */
 }
 
+/*///DROPDOWN REGISTRO DE USUARIO///*/
+/* Estilos para el botón del dropdown */
+.dropdown-button {
+  width: 100%;
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  text-align: left;
+  cursor: pointer;
+}
 
+.dropdown-button:hover {
+  background-color: #e2e6ea;
+}
 
+/* Estilos para el menú del dropdown */
+.dropdown-menu-custom {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  padding: 1px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos para grupos de checkboxes y radios */
+.checkbox-group,
+.radio-group {
+  display: flex;
+  align-items: center;
+  
+}
+
+.checkbox-group input,
+.radio-group input {
+  margin-right: -150px;
+  margin-left: -150px;
+}
+
+/* Estilos para programas seleccionados */
+.selected-programs ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.selected-programs li {
+  background-color: #e9ecef;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  margin: 2px;
+  display: inline-block;
+}
+
+/*////TABS///*/
+/* Estilos para las pestañas personalizadas */
+.custom-tabs .nav-tabs {
+  border-bottom: none; /* Elimina la línea de borde predeterminada */
+}
+
+.custom-tabs .nav-link {
+  color: #000; /* Color del texto de las pestañas */
+  background-color: transparent; /* Fondo transparente */
+  margin-right: 0.75rem; /* Espacio entre pestañas */
+  font-size: 0.97rem; /* Tamaño de la fuente reducido */
+  padding: 0.5rem 0.3rem; /* Padding vertical reducido */
+}
+
+.custom-tabs .nav-link:hover {
+  color: #00A651; /* Cambia el color del texto al pasar el mouse */
+}
+
+.custom-tabs .nav-link.active {
+  color: #0000; /* Color del texto de la pestaña activa */
+  border-bottom: 2px solid #00A651; /* Línea verde debajo de la pestaña activa */
+}
+
+/* Opcional: Ocultar la barra de desplazamiento en navegadores WebKit */
+.overflow-auto::-webkit-scrollbar {
+  display: none;
+}
+
+.overflow-auto {
+  -ms-overflow-style: none;  /* IE y Edge*/
+  scrollbar-width: none;  /* Firefox*/
+}
+ 

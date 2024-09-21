@@ -1,8 +1,56 @@
-import React from "react";
+// RegistrationForm.jsx
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from 'reactstrap';
 import '../index.css';
 
-const RegistrationForm = ({ form, handleChange, handleSubmit, editIndex, setEditIndex, handleDelete}) => {
+const RegistrationForm = ({
+  form,
+  handleChange,
+  handleSubmit,
+  editIndex,
+  setEditIndex,
+  handleDelete,
+  availablePrograms, // Recibir programas disponibles como prop
+  handleProgramChange, // Recibir manejador de programas como prop
+}) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Manejar clics fuera del dropdown para cerrarlo
+  const handleClickOutside = (e) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      setDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
+  // Alternar el estado del dropdown
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
+
+  // Manejar la selección de programas
+  const onProgramSelect = (program) => {
+    if (form.Rol === "Docente") {
+      // Para Docentes, manejar múltiples selecciones
+      if (form.Programas.includes(program)) {
+        handleProgramChange(form.Programas.filter(p => p !== program));
+      } else {
+        handleProgramChange([...form.Programas, program]);
+      }
+    } else {
+      // Para Director y Decano, una única selección
+      handleProgramChange([program]);
+      setDropdownOpen(false); // Cerrar el dropdown después de la selección
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="form-group-custom">
@@ -83,6 +131,69 @@ const RegistrationForm = ({ form, handleChange, handleSubmit, editIndex, setEdit
         </div>
       </div>
 
+      {/* Lista Desplegable para Programas Académicos */}
+      <div className="form-group-custom" ref={dropdownRef}>
+        <label>Programas Académicos</label>
+        <div className="input-group-custom">
+          <button
+            type="button"
+            className="dropdown-button"
+            onClick={toggleDropdown}
+            onMouseDown={(e) => e.preventDefault()} // Evita perder el foco del botón
+          >
+            Seleccionar Programas
+          </button>
+          {dropdownOpen && (
+            <div
+              className="dropdown-menu-custom"
+              onClick={(e) => e.stopPropagation()} // Detiene la propagación del clic
+            >
+              {availablePrograms.map((program, index) => (
+                <div key={index} className="dropdown-item-custom">
+                  {form.Rol === "Docente" ? (
+                    // Para Docentes, checkboxes para múltiples selecciones
+                    <div className="checkbox-group">
+                      <input
+                        type="checkbox"
+                        id={`program-checkbox-${index}`}
+                        name="Programas"
+                        value={program}
+                        checked={form.Programas.includes(program)}
+                        onChange={() => onProgramSelect(program)}
+                      />
+                      <label htmlFor={`program-checkbox-${index}`}>{program}</label>
+                    </div>
+                  ) : (
+                    // Para Director y Decano, radio buttons para una única selección
+                    <div className="radio-group">
+                      <input
+                        type="radio"
+                        id={`program-radio-${index}`}
+                        name="Programas"
+                        value={program}
+                        checked={form.Programas.includes(program)}
+                        onChange={() => onProgramSelect(program)}
+                      />
+                      <label htmlFor={`program-radio-${index}`}>{program}</label>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        {/* Mostrar los programas seleccionados */}
+        <div className="selected-programs">
+          {form.Programas.length > 0 && (
+            <ul>
+              {form.Programas.map((program, index) => (
+                <li key={index}>{program}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
       <div className="button-container">
         <Button color="success" type="submit" className="me-3">
           {editIndex !== null ? "Guardar cambios" : "Registrar"}
@@ -92,7 +203,6 @@ const RegistrationForm = ({ form, handleChange, handleSubmit, editIndex, setEdit
             Eliminar Usuario
           </Button>
         )}
-
       </div>
     </form>
   );

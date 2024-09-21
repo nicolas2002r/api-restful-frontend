@@ -121,7 +121,7 @@ export const Userform = () => {
           </label>
         </div>
 
-        <button type="submit" className="btn btn-primary w-100">
+        <button type="submit" className="custom-rounded-btn">
           Iniciar Sesión
         </button>
       </form>

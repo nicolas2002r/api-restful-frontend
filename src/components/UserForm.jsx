@@ -23,7 +23,7 @@ export const Userform = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
- // Manejo para el proceso de autenticación (ej: enviar a una API)
+    // Manejo para el proceso de autenticación (ej: enviar a una API)
     //---->Autenticación por defecto
     //console.log("Número de Identificación:", idNumber);
     //console.log("Contraseña:", password);
@@ -32,37 +32,28 @@ export const Userform = () => {
     // Redirige a UserRegistration después de enviar el formulario
     //----> Autenticación por defecto
     //navigate("/UserRegistration");
-    
-    // Autenticación de prueba: si idNumber y password son '1234', redirige a UserRegistration
+
+
     if (idNumber === '1234' && password === '1234') {
       console.log("Autenticado como Administrador");
-      console.log("Número de Identificación:", idNumber);
-      console.log("Contraseña:", password);
-      console.log("Recordarme:", remember);
-  
-      // Realiza el login en el contexto
       login();
-  
-      // Redirige a la página de administrador o dashboard
       navigate("/UserRegistration");
     } 
     // Autenticación para el rol de Docente (usuario '5678')
     else if (idNumber === '5678' && password === '5678') {
       console.log("Autenticado como Docente");
-      console.log("Número de Identificación:", idNumber);
-      console.log("Contraseña:", password);
-      console.log("Recordarme:", remember);
-  
-      // Realiza el login en el contexto
       login();
-  
-      // Redirige a la página de registro de usuarios
       navigate("/AgendaDocente");
+    } 
+    // Autenticación para el rol de Decano (usuario '1111')
+    else if (idNumber === '1111' && password === '1111') {
+      console.log("Autenticado como Decano");
+      login();
+      navigate("/RevisionDecano"); // Redirige a la vista correspondiente del decano
     } else {
-      // Manejo de autenticación fallida (mensaje de error)
       alert("Número de identificación o contraseña incorrectos.");
     }
-    // Resetea el estado del formulario
+
     setFormState({
       idNumber: "",
       password: "",

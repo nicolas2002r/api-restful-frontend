@@ -238,26 +238,29 @@ input:focus {
 }
 
 /*////TABS///*/
+
 /* Estilos para las pestañas personalizadas */
-.custom-tabs .nav-tabs {
-  border-bottom: none; /* Elimina la línea de borde predeterminada */
+.custom-tabs .MuiTabs-indicator {
+  background-color: #00A651; /* Cambia este valor al color deseado */
+  color:#00A651;
 }
 
-.custom-tabs .nav-link {
+/* Opcional: Estilos adicionales para las pestañas */
+.custom-tabs .MuiTab-root {
   color: #000; /* Color del texto de las pestañas */
   background-color: transparent; /* Fondo transparente */
   margin-right: 0.75rem; /* Espacio entre pestañas */
-  font-size: 0.97rem; /* Tamaño de la fuente reducido */
+  font-size: 0.73rem; /* Tamaño de la fuente reducido */
   padding: 0.5rem 0.3rem; /* Padding vertical reducido */
+  transition: color 0.3s; /* Suaviza el cambio de color al pasar el mouse */
 }
 
-.custom-tabs .nav-link:hover {
+.custom-tabs .MuiTab-root:hover {
   color: #00A651; /* Cambia el color del texto al pasar el mouse */
 }
 
-.custom-tabs .nav-link.active {
-  color: #0000; /* Color del texto de la pestaña activa */
-  border-bottom: 2px solid #00A651; /* Línea verde debajo de la pestaña activa */
+.custom-tabs .MuiTabs-root .Mui-selected {
+  color: #00A651; /* Color del texto de la pestaña activa */
 }
 
 /* Opcional: Ocultar la barra de desplazamiento en navegadores WebKit */

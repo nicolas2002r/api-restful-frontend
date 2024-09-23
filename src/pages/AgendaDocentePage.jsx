@@ -1,75 +1,81 @@
 import React, { useState } from "react";
-import { Navbar } from "../components/Navbar";
 import { NavLink } from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
-import Tabs from 'react-bootstrap/Tabs';
-import Tab from 'react-bootstrap/Tab';
+import { Box, Tab } from '@mui/material';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
 import '../index.css';
+import {LaboresAcademicas} from '../components/LaboresAcademicas';
+import {LaboresCientificas} from '../components/LaboresCientificas';
+import {LaboresExtension} from '../components/LaboresExtension';
+import {GestionAcademica} from '../components/GestionAcademica';
+import {LaboresDocencia} from '../components/LaboresDocencia';
 
 export const AgendaDocentePage = () => {
   // Estado para manejar la pestaña activa
-  const [key, setKey] = useState('docencia');
+  const [value, setValue] = useState('1');
 
-  // Items de la Navbar
-  const customItems = (
-    <>
-      <Nav.Link className="nav-item-custom">
-        Casa
-      </Nav.Link>
-      <Nav.Link as={NavLink} to="/tablero-agendamiento" className="nav-item-custom">
-        Tablero de agendamiento
-      </Nav.Link>
-      <Nav.Link as={NavLink} to="/mis-agendas" className="nav-item-custom">
-        Mis agendas
-      </Nav.Link>
-    </>
-  );
+  // Manejar el cambio de pestaña
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   return (
     <>
       <div className="container mt-4">
         <h4>Agenda Docente</h4>
-        {/* Contenedor para hacer las pestañas desplazables horizontalmente si es necesario */}
+        {/* Contenedor para las pestañas */}
         <div className="overflow-auto">
-          <Tabs
-            id="agenda-docente-tabs"
-            activeKey={key}
-            onSelect={(k) => setKey(k)}
-            className="mb-3 custom-tabs flex-nowrap"
-            variant="tabs" // Puedes cambiar a 'pills' si lo prefieres
-          >
-            <Tab eventKey="docencia" title="Labores de Docencia">
+          <TabContext value={value}>
+            <Box 
+              sx={{ 
+                borderBottom: 1, 
+                borderColor: 'divider',
+                /* Asegura que las pestañas no se envuelvan */
+                '& .MuiTabs-flexContainer': {
+                  flexWrap: 'nowrap',
+                },
+              }}
+              className="custom-tabs" /* Asignar la clase personalizada */
+            >
+              <TabList 
+                onChange={handleChange} 
+                aria-label="agenda docente tabs"
+              >
+                {/* Definición de cada Tab con estilos personalizados */}
+                <Tab label="Labores de Docencia" value="1"/>
+                <Tab label="Labores Académicas y Formativas" value="2" />
+                <Tab label="Labores Científicas" value="3" />
+                <Tab label="Labores de Extensión y Culturales" value="4" />
+                <Tab label="Gestión Académica y Administrativa" value="5" />
+              </TabList>
+            </Box>
+            {/* Contenido de cada TabPanel */}
+            <TabPanel value="1">
               <div className="mt-3">
-                <h5>Labores de Docencia</h5>
-                <p>Aquí va la información relacionada con las labores de docencia.</p>
-                {/* Puedes reemplazar esto con componentes más complejos */}
+                <LaboresDocencia />
               </div>
-            </Tab>
-            <Tab eventKey="academicas" title="Labores Académicas y Formativas">
+            </TabPanel>
+            <TabPanel value="2">
               <div className="mt-3">
-                <h5>Labores Académicas y Formativas</h5>
-                <p>Aquí va la información relacionada con las labores académicas y formativas.</p>
+                <LaboresAcademicas />
               </div>
-            </Tab>
-            <Tab eventKey="cientificas" title="Labores Científicas">
+            </TabPanel>
+            <TabPanel value="3">
               <div className="mt-3">
-                <h5>Labores Científicas</h5>
-                <p>Aquí va la información relacionada con las labores científicas.</p>
+                <LaboresCientificas />
               </div>
-            </Tab>
-            <Tab eventKey="extension" title="Labores de Extensión y Culturales">
+            </TabPanel>
+            <TabPanel value="4">
               <div className="mt-3">
-                <h5>Labores de Extensión y Culturales</h5>
-                <p>Aquí va la información relacionada con las labores de extensión y culturales.</p>
+               <LaboresExtension />
               </div>
-            </Tab>
-            <Tab eventKey="gestion" title="Gestión Académicas y Administrativas">
+            </TabPanel>
+            <TabPanel value="5">
               <div className="mt-3">
-                <h5>Actividades de Gestión Académicas y Administrativas</h5>
-                <p>Aquí va la información relacionada con las actividades de gestión académicas y administrativas.</p>
+                <GestionAcademica />
               </div>
-            </Tab>
-          </Tabs>
+            </TabPanel>
+          </TabContext>
         </div>
       </div>
     </>

@@ -55,7 +55,7 @@ code {
 
 /*Fondo general para las vistas*/
 .background-container {
-  min-height: 100vh; /* Altura completa de la pantalla */
+  min-height: 108vh; /* Altura completa de la pantalla */
   background: linear-gradient(to bottom, #E6E7E6 50%, #00A651 50%); /* Verde claro arriba, blanco abajo */
   display: flex;
   justify-content: center;
@@ -72,8 +72,8 @@ code {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: left;
   margin-top: 50px;
-  height: 565px; /* Altura fija para el contenedor */
-  overflow-y: auto; /* Barra de desplazamiento vertical */
+  height: 610px; /* Altura fija para el contenedor */
+  overflow-y: 550px; /* Barra de desplazamiento vertical */
   position: relative; /* Mantiene la posición relativa */
 }
 /* Texto centrado */
@@ -97,11 +97,14 @@ h4 {
 /*Darle estilo al formulario*/
 .form-column {
   flex: 1;
-  margin-right: 10px;
-  padding: 20px;
+  margin-right: 40px;
+  padding: 5px;
   background-color: #f7f7f7;
   border-radius: 10px;
+  max-height: 520px; /* Asegura que se adapte al contenedor padre */
+  overflow-y: auto; /* Añade scroll vertical al formulario */
 }
+
 
 .table-column {
   flex: 2;
@@ -238,6 +241,14 @@ input:focus {
 }
 
 /*////TABS///*/
+.custom-tabs {
+  position: -webkit-sticky; /* Soporte para Safari */
+  position: sticky;
+  top: 0;
+  background-color: white; /* Color blanco sólido para todo el encabezado */
+  z-index: 1000; /* Asegura que esté por encima de otros elementos */
+}
+
 
 /* Estilos para las pestañas personalizadas */
 .custom-tabs .MuiTabs-indicator {
@@ -272,4 +283,35 @@ input:focus {
   -ms-overflow-style: none;  /* IE y Edge*/
   scrollbar-width: none;  /* Firefox*/
 }
- 
+
+/*///Encabezados de la tabla///*/
+/* Colorear encabezados de la tabla */
+.header-row th,
+.header-cell {
+  background-color: #00A654;
+  color: white; 
+  text-align: center;
+}
+/*/// Botones generales de los modulos///*/
+/* Contenedor para los botones */
+.button-container {
+  display: flex;
+  flex-direction: row; /* Cambia a fila para alinear botones horizontalmente */
+  justify-content: center; /* Centra los botones horizontalmente */
+  margin-top: 20px; /* Espacio superior para separar de otros elementos */
+}
+
+button.B-general {
+  border-radius: 15px;
+  border-color: #00A651;
+  padding: 10px 20px;
+  transition: background-color 0.3s ease, border-radius 0.3s ease;
+  background-color: #00A651;
+  color: #FFFFFF;
+  border: none; /* Asegúrate de que no haya un borde adicional */
+}
+
+button.B-general:hover {
+  background-color: #038a44; 
+}
+

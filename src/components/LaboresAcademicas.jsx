@@ -1,49 +1,254 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
+import '../index.css';
 
 export const LaboresAcademicas = () => {
+  const productoOptionsMap = {
+    'Preparación de clases': [
+      'SYLLABUS DE LA ASIGNATURA',
+      'MATERIAL EDUCATIVO SUBIDO EN LA PLATAFORMA MOODLE, EN EL CURSO DE CADA ASIGNATURA O MÓDULO',
+      'MATERIALES EDUCATIVOS UTILIZADOS EN CADA ENCUENTRO SINCRÓNICO REALIZADO',
+      'RECURSOS (VIDEOS, LINKS, INFOGRAFÍAS, DIAPOSITIVAS, DOCUMENTOS BIBLIOGRÁFICOS U OTROS RECURSOS EDUCATIVOS)',
+      'ACTIVIDADES (CUESTIONARIOS, EJERCICIOS, TALLERES, TAREAS, FOROS U OTRAS)',
+    ],
+    'Evaluación de aprendizaje a estudiantes': [
+      'PLANILLA DE CALIFICACIONES (CORHUILAPLUS+)',
+      'EVIDENCIAS DE AUTOEVALUACIÓN',
+      'EVIDENCIAS DE COEVALUACIÓN',
+      'NOTA: CUESTIONARIOS, GUÍAS PARA EJERCICIOS, TALLERES',
+    ],
+    'Gestión de eventos académicos': [
+      'FO-GD-83 PLANEACIÓN ACTIVIDADES ACADÉMICAS',
+      'FO-GD-84 AGENDA PARA ACTIVIDADES ACADÉMICAS',
+      'FO-GD-85 PRESUPUESTO PARA ACTIVIDADES ACADÉMICAS',
+      'LISTADO DE ASISTENCIA',
+    ],
+    'Acompañamiento académico a estudiantes': [
+      'TRES REPORTES SOBRE EL DESARROLLO DEL ACOMPAÑAMIENTO',
+      'SOPORTE DE LAS REMISIONES DE ESTUDIANTES',
+    ],
+    'Cursos de fortalecimiento dirigido a estudiantes': [
+      'INFORME EJECUTIVO DEL DESARROLLO DE LA ACTIVIDAD',
+      'LISTADO DE ASISTENCIA',
+      'RECURSOS EDUCATIVOS',
+    ],
+    'Asesoría en emprendimiento': [
+      'INFORME EJECUTIVO DEL DESARROLLO DE LA ACTIVIDAD',
+      'MATERIAL DE APOYO',
+    ],
+  };
+
+  // Inicializar actividades académicas con productos seleccionados
+  const [academicas, setAcademicas] = useState([
+    {
+      actividad: 'Preparación de clases',
+      horasSemanales: '',
+      horasSemestrales: '',
+      descripcionActividad: '',
+      producto: [...productoOptionsMap['Preparación de clases']],
+    },
+    {
+      actividad: 'Evaluación de aprendizaje a estudiantes',
+      horasSemanales: '',
+      horasSemestrales: '',
+      descripcionActividad: '',
+      producto: [...productoOptionsMap['Evaluación de aprendizaje a estudiantes']],
+    },
+    {
+      actividad: 'Gestión de eventos académicos',
+      horasSemanales: '',
+      horasSemestrales: '',
+      descripcionActividad: '',
+      producto: [...productoOptionsMap['Gestión de eventos académicos']],
+    },
+  ]);
+
+  // Inicializar actividades formativas con productos seleccionados
+  const [formativas, setFormativas] = useState([
+    {
+      actividad: 'Acompañamiento académico a estudiantes',
+      horasSemanales: 0,
+      horasSemestrales: 0,
+      descripcionActividad: '',
+      producto: [...productoOptionsMap['Acompañamiento académico a estudiantes']],
+    },
+    {
+      actividad: 'Cursos de fortalecimiento dirigido a estudiantes',
+      horasSemanales: 0,
+      horasSemestrales: 0,
+      descripcionActividad: '',
+      producto: [...productoOptionsMap['Cursos de fortalecimiento dirigido a estudiantes']],
+    },
+    {
+      actividad: 'Asesoría en emprendimiento',
+      horasSemanales: 0,
+      horasSemestrales: 0,
+      descripcionActividad: '',
+      producto: [...productoOptionsMap['Asesoría en emprendimiento']],
+    },
+  ]);
+
+  const handleAcademicasChange = (index, field, value) => {
+    const nuevasAcademicas = [...academicas];
+    nuevasAcademicas[index][field] =
+      field.includes('horas') ? Number(value) : value;
+    setAcademicas(nuevasAcademicas);
+  };
+
+  const handleFormativasChange = (index, field, value) => {
+    const nuevasFormativas = [...formativas];
+    nuevasFormativas[index][field] =
+      field.includes('horas') ? Number(value) : value;
+    setFormativas(nuevasFormativas);
+  };
+
+  const totalHorasSemanales =
+    academicas.reduce((acc, curr) => acc + curr.horasSemanales, 0) +
+    formativas.reduce((acc, curr) => acc + curr.horasSemanales, 0);
+
+  const totalHorasSemestrales =
+    academicas.reduce((acc, curr) => acc + curr.horasSemestrales, 0) +
+    formativas.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
+
   return (
-    <div>
-      <h5>Labores Académicas y Formativas</h5>
-      <table className="table table-bordered">
+    <div className="overflow-x-auto">
+      <h5 className="text-xl font-bold mb-2">Labores Académicas y Formativas</h5>
+      <table className="w-full border-collapse border border-gray-300 mb-4">
         <thead>
-          <tr>
-            <th colSpan="2" className="text-center">Labores Académicas</th>
+          <tr className="header-row">
+            <th colSpan="5" className="text-center p-2">Labores Académicas</th>
+          </tr>
+          <tr className="bg-blue-200">
+            <th className="border border-gray-300 p-4 header-cell">Actividad</th>
+            <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semanales)</th>
+            <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semestrales)</th>
+            <th className="border border-gray-300 p-4 header-cell">Descripción de la Actividad</th>
+            <th className="border border-gray-300 p-2 header-cell">Producto</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Materia 1</td>
-            <td>Descripción de la labor académica 1</td>
-          </tr>
-          <tr>
-            <td>Materia 2</td>
-            <td>Descripción de la labor académica 2</td>
-          </tr>
-          <tr>
-            <td>Materia 3</td>
-            <td>Descripción de la labor académica 3</td>
-          </tr>
-          {/* Puedes agregar más filas según sea necesario */}
+          {academicas.map((item, index) => (
+            <tr key={index}>
+              <td className="border border-gray-300 p-2" style={{ width: '170px' }}>{item.actividad}</td>
+              <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
+                <input
+                  type="number"
+                  min="0"
+                  value={item.horasSemanales}
+                  onChange={(e) =>
+                    handleAcademicasChange(index, 'horasSemanales', e.target.value)
+                  }
+                  className="w-full p-1 border border-gray-300 rounded"
+                />
+              </td>
+              <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
+                <input
+                  type="number"
+                  min="0"
+                  value={item.horasSemestrales}
+                  onChange={(e) =>
+                    handleAcademicasChange(index, 'horasSemestrales', e.target.value)
+                  }
+                  className="w-full p-1 border border-gray-300 rounded"
+                />
+              </td>
+              <td className="border border-gray-300 p-2">
+                <textarea
+                  value={item.descripcionActividad}
+                  onChange={(e) =>
+                    handleAcademicasChange(index, 'descripcionActividad', e.target.value)
+                  }
+                  className="w-full p-1 border border-gray-300 rounded"
+                  rows="4"
+                ></textarea>
+              </td>
+              <td className="border border-gray-300 p-2">
+                <CheckboxDropdown
+                  options={productoOptionsMap[item.actividad] || []}
+                  selectedOptions={item.producto}
+                  onChange={(selected) =>
+                    handleAcademicasChange(index, 'producto', selected)
+                  }
+
+                />
+              </td>
+            </tr>
+          ))}
         </tbody>
+      </table>
+
+      <table className="w-full border-collapse border border-gray-300 mb-4">
         <thead>
-          <tr>
-            <th colSpan="2" className="text-center">Labores Formativas</th>
+          <tr className="header-row">
+            <th colSpan="5" className="text-center p-2">Labores Formativas</th>
+          </tr>
+          <tr className="bg-green-200">
+            <th className="border border-gray-300 p-4 header-cell">Actividad</th>
+            <th className="border border-gray-300 p-1 header-cell">Dedicación (Horas Semanales)</th>
+            <th className="border border-gray-300 p-1 header-cell">Dedicación (Horas Semestrales)</th>
+            <th className="border border-gray-300 p-4 header-cell">Descripción de la Actividad</th>
+            <th className="border border-gray-300 p-2 header-cell">Producto</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Taller 1</td>
-            <td>Descripción de la labor formativa 1</td>
+          {formativas.map((item, index) => (
+            <tr key={index}>
+              <td className="border border-gray-300 p-2">{item.actividad}</td>
+              <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
+                <input
+                  type="number"
+                  min="0"
+                  value={item.horasSemanales}
+                  onChange={(e) =>
+                    handleFormativasChange(index, 'horasSemanales', e.target.value)
+                  }
+                  className="w-full p-1 border border-gray-300 rounded"
+                />
+              </td>
+              <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
+                <input
+                  type="number"
+                  min="0"
+                  value={item.horasSemestrales}
+                  onChange={(e) =>
+                    handleFormativasChange(index, 'horasSemestrales', e.target.value)
+                  }
+                  className="w-full p-1 border border-gray-300 rounded"
+                />
+              </td>
+              <td className="border border-gray-300 p-2">
+                <textarea
+                  value={item.descripcionActividad}
+                  onChange={(e) =>
+                    handleFormativasChange(index, 'descripcionActividad', e.target.value)
+                  }
+                  className="w-full p-1 border border-gray-300 rounded"
+                  rows="4"
+                ></textarea>
+              </td>
+              <td className="border border-gray-300 p-2">
+                <CheckboxDropdown
+                  options={productoOptionsMap[item.actividad] || []}
+                  selectedOptions={item.producto}
+                  onChange={(selected) =>
+                    handleFormativasChange(index, 'producto', selected)
+                  }
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+        <tbody>
+          <tr className="bg-gray-200 font-bold">
+            <td className="border border-gray-300 p-2">Total</td>
+            <td className="border border-gray-300 p-2 text-center">
+              {formativas.reduce((acc, curr) => acc + Number(curr.horasSemanales), 0)}
+            </td>
+            <td className="border border-gray-300 p-2 text-center">
+              {formativas.reduce((acc, curr) => acc + Number(curr.horasSemestrales), 0)}
+            </td>
+            <td className="border border-gray-300 p-2" colSpan="2"></td>
           </tr>
-          <tr>
-            <td>Taller 2</td>
-            <td>Descripción de la labor formativa 2</td>
-          </tr>
-          <tr>
-            <td>Taller 3</td>
-            <td>Descripción de la labor formativa 3</td>
-          </tr>
-          {/* Puedes agregar más filas según sea necesario */}
         </tbody>
       </table>
     </div>

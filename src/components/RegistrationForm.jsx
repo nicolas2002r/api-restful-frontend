@@ -1,4 +1,3 @@
-// RegistrationForm.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from 'reactstrap';
 import '../index.css';

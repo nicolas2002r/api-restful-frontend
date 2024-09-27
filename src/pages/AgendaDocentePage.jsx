@@ -1,6 +1,4 @@
 import React, { useState, useRef } from "react";
-import { NavLink } from "react-router-dom";
-import Nav from 'react-bootstrap/Nav';
 import { Box, Tab, Button } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import '../index.css';
@@ -11,24 +9,33 @@ import { GestionAcademica } from '../components/GestionAcademica';
 import { LaboresDocencia } from '../components/LaboresDocencia';
 
 export const AgendaDocentePage = () => {
-  // Estado para manejar la pestaña activa
   const [value, setValue] = useState('1');
-  // Referencia para el contenedor de la tabla
-  const tableRef = useRef(null);
+  const laboresAcademicasRef = useRef(null);
+  const laboresCientificasRef = useRef(null);
+  const laboresExtensionRef = useRef(null);
+  const gestionAcademicaRef = useRef(null);
+  const laboresDocenciaRef = useRef(null);
 
-  // Manejar el cambio de pestaña
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    // Desplazar la vista hacia la parte superior de la tabla
-    if (tableRef.current) {
-      tableRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
   };
 
-  // Funciones de manejo de botones
   const handleVaciar = () => {
-    console.log("Vaciar acción");
-    // Implementar lógica para vaciar el contenido
+    if (laboresAcademicasRef.current) {
+      laboresAcademicasRef.current.vaciarActividades();
+    }
+    if (laboresCientificasRef.current) {
+      laboresCientificasRef.current.vaciarActividades();
+    }
+    if (laboresExtensionRef.current) {
+      laboresExtensionRef.current.vaciarActividades();
+    }
+    if (gestionAcademicaRef.current) {
+      gestionAcademicaRef.current.vaciarActividades();
+    }
+    if (laboresDocenciaRef.current) {
+      laboresDocenciaRef.current.vaciarActividades();
+    }
   };
 
   const handleExportar = () => {
@@ -45,9 +52,9 @@ export const AgendaDocentePage = () => {
     <>
       <div className="container mt-4">
         {/* Título con sticky */}
-        <h4>Agenda Docente</h4>
+        <h3>AGENDA DOCENTE</h3>
         {/* Contenedor para las pestañas */}
-        <div className="table-column" ref={tableRef}>
+        <div className="table-column">
           <TabContext value={value}>
             <Box 
               sx={{ 
@@ -70,27 +77,27 @@ export const AgendaDocentePage = () => {
             {/* Contenido de cada TabPanel */}
             <TabPanel value="1">
               <div className="mt-3">
-                <LaboresDocencia />
+                <LaboresDocencia ref={laboresDocenciaRef}/>
               </div>
             </TabPanel>
             <TabPanel value="2">
               <div className="mt-3">
-                <LaboresAcademicas />
+                <LaboresAcademicas ref={laboresAcademicasRef}/>
               </div>
             </TabPanel>
             <TabPanel value="3">
               <div className="mt-3">
-                <LaboresCientificas />
+                <LaboresCientificas ref={laboresCientificasRef}/>
               </div>
             </TabPanel>
             <TabPanel value="4">
               <div className="mt-3">
-               <LaboresExtension />
+               <LaboresExtension ref={laboresExtensionRef}/>
               </div>
             </TabPanel>
             <TabPanel value="5">
               <div className="mt-3">
-                <GestionAcademica />
+                <GestionAcademica ref={gestionAcademicaRef}/>
               </div>
             </TabPanel>
           </TabContext>

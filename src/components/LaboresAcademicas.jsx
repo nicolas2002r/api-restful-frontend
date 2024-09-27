@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
 import '../index.css';
 
-export const LaboresAcademicas = () => {
+export const LaboresAcademicas = forwardRef((props, ref) => {
   const productoOptionsMap = {
     'Preparación de clases': [
       'SYLLABUS DE LA ASIGNATURA',
@@ -38,32 +38,30 @@ export const LaboresAcademicas = () => {
     ],
   };
 
-  // Inicializar actividades académicas con productos seleccionados
   const [academicas, setAcademicas] = useState([
     {
       actividad: 'Preparación de clases',
-      horasSemanales: '',
-      horasSemestrales: '',
+      horasSemanales: 0,
+      horasSemestrales: 0,
       descripcionActividad: '',
       producto: [...productoOptionsMap['Preparación de clases']],
     },
     {
       actividad: 'Evaluación de aprendizaje a estudiantes',
-      horasSemanales: '',
-      horasSemestrales: '',
+      horasSemanales: 0,
+      horasSemestrales: 0,
       descripcionActividad: '',
       producto: [...productoOptionsMap['Evaluación de aprendizaje a estudiantes']],
     },
     {
       actividad: 'Gestión de eventos académicos',
-      horasSemanales: '',
-      horasSemestrales: '',
+      horasSemanales: 0,
+      horasSemestrales: 0,
       descripcionActividad: '',
       producto: [...productoOptionsMap['Gestión de eventos académicos']],
     },
   ]);
 
-  // Inicializar actividades formativas con productos seleccionados
   const [formativas, setFormativas] = useState([
     {
       actividad: 'Acompañamiento académico a estudiantes',
@@ -88,6 +86,60 @@ export const LaboresAcademicas = () => {
     },
   ]);
 
+  const vaciarActividades = () => {
+    setAcademicas([
+      {
+        actividad: 'Preparación de clases',
+        horasSemanales: '',
+        horasSemestrales: '',
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Preparación de clases']],
+      },
+      {
+        actividad: 'Evaluación de aprendizaje a estudiantes',
+        horasSemanales: '',
+        horasSemestrales: '',
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Evaluación de aprendizaje a estudiantes']],
+      },
+      {
+        actividad: 'Gestión de eventos académicos',
+        horasSemanales: '',
+        horasSemestrales: '',
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Gestión de eventos académicos']],
+      },
+    ]);
+
+    setFormativas([
+      {
+        actividad: 'Acompañamiento académico a estudiantes',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Acompañamiento académico a estudiantes']],
+      },
+      {
+        actividad: 'Cursos de fortalecimiento dirigido a estudiantes',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Cursos de fortalecimiento dirigido a estudiantes']],
+      },
+      {
+        actividad: 'Asesoría en emprendimiento',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Asesoría en emprendimiento']],
+      },
+    ]);
+  };
+
+  useImperativeHandle(ref, () => ({
+    vaciarActividades,
+  }));
+
   const handleAcademicasChange = (index, field, value) => {
     const nuevasAcademicas = [...academicas];
     nuevasAcademicas[index][field] =
@@ -102,14 +154,17 @@ export const LaboresAcademicas = () => {
     setFormativas(nuevasFormativas);
   };
 
-  const totalHorasSemanales =
-    academicas.reduce((acc, curr) => acc + curr.horasSemanales, 0) +
-    formativas.reduce((acc, curr) => acc + curr.horasSemanales, 0);
-
-  const totalHorasSemestrales =
-    academicas.reduce((acc, curr) => acc + curr.horasSemestrales, 0) +
-    formativas.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
-
+   // Calcular totales para académicas y formativas
+   const totalHorasSemanalesAcademicas = academicas.reduce((acc, curr) => acc + curr.horasSemanales, 0);
+   const totalHorasSemestralesAcademicas = academicas.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
+ 
+   const totalHorasSemanalesFormativas = formativas.reduce((acc, curr) => acc + curr.horasSemanales, 0);
+   const totalHorasSemestralesFormativas = formativas.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
+ 
+   // Sumar totales
+   const totalHorasSemanales = totalHorasSemanalesAcademicas + totalHorasSemanalesFormativas;
+   const totalHorasSemestrales = totalHorasSemestralesAcademicas + totalHorasSemestralesFormativas;
+ 
   return (
     <div className="overflow-x-auto">
       <h5 className="text-xl font-bold mb-2">Labores Académicas y Formativas</h5>
@@ -242,10 +297,10 @@ export const LaboresAcademicas = () => {
           <tr className="bg-gray-200 font-bold">
             <td className="border border-gray-300 p-2">Total</td>
             <td className="border border-gray-300 p-2 text-center">
-              {formativas.reduce((acc, curr) => acc + Number(curr.horasSemanales), 0)}
+              {totalHorasSemanales}
             </td>
             <td className="border border-gray-300 p-2 text-center">
-              {formativas.reduce((acc, curr) => acc + Number(curr.horasSemestrales), 0)}
+              {totalHorasSemestrales}
             </td>
             <td className="border border-gray-300 p-2" colSpan="2"></td>
           </tr>
@@ -253,4 +308,4 @@ export const LaboresAcademicas = () => {
       </table>
     </div>
   );
-};
+});

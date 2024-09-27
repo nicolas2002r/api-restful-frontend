@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
 import '../index.css';
 
-export const LaboresExtension = () => {
+export const LaboresExtension = forwardRef((props, ref) => {
   const productoOptionsMap = {
     'Gestión de proyectos de consultoría': [
       'PROYECTOS EN EJECUCIÓN: INFORMES PARCIALES',
@@ -44,55 +44,67 @@ export const LaboresExtension = () => {
     'Divulgación de los valores culturales': [],
   };
 
-  // Inicializar actividades de extensión con productos seleccionados
-  const [extension, setExtension] = useState([
-    {
-      actividad: 'Gestión de proyectos de consultoría',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: [...productoOptionsMap['Gestión de proyectos de consultoría']],
-    },
-    {
-      actividad: 'Acompañamiento al sector empresarial',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: [...productoOptionsMap['Acompañamiento al sector empresarial']],
-    },
-    {
-      actividad: 'Participación en proyectos de intervención comunitaria',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: [...productoOptionsMap['Participación en proyectos de intervención comunitaria']],
-    },
-    {
-      actividad: 'Gestión de proyectos culturales',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: [...productoOptionsMap['Gestión de proyectos culturales']],
-    },
-    {
-      actividad: 'Promoción de la educación artística',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: [...productoOptionsMap['Promoción de la educación artística']],
-    },
-    {
-      actividad: 'Divulgación de los valores culturales',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: [...productoOptionsMap['Divulgación de los valores culturales']],
-    },
-  ]);
+  const generateInitialActividades = () => {
+    return [
+      {
+        actividad: 'Gestión de proyectos de consultoría',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Gestión de proyectos de consultoría']],
+      },
+      {
+        actividad: 'Acompañamiento al sector empresarial',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Acompañamiento al sector empresarial']],
+      },
+      {
+        actividad: 'Participación en proyectos de intervención comunitaria',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Participación en proyectos de intervención comunitaria']],
+      },
+      {
+        actividad: 'Gestión de proyectos culturales',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Gestión de proyectos culturales']],
+      },
+      {
+        actividad: 'Promoción de la educación artística',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Promoción de la educación artística']],
+      },
+      {
+        actividad: 'Divulgación de los valores culturales',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Divulgación de los valores culturales']],
+      },
+    ];
+  };
+
+  const [extension, setExtension] = useState(generateInitialActividades());
+
+  const vaciarActividades = () => {
+    setExtension(generateInitialActividades());
+  };
+
+  useImperativeHandle(ref, () => ({
+    vaciarActividades,
+  }));
 
   const handleExtensionChange = (index, field, value) => {
     const nuevasExtension = [...extension];
-    nuevasExtension[index][field] = field.includes('horas') ? Number(value) : value;
+    nuevasExtension[index][field] =
+      field.includes('horas') ? Number(value) : value;
     setExtension(nuevasExtension);
   };
 
@@ -162,14 +174,20 @@ export const LaboresExtension = () => {
               </td>
             </tr>
           ))}
+          </tbody>
+           <tbody>
           <tr className="bg-gray-200 font-bold">
             <td className="border border-gray-300 p-2">Total</td>
-            <td className="border border-gray-300 p-2 text-center">{totalHorasSemanales}</td>
-            <td className="border border-gray-300 p-2 text-center">{totalHorasSemestrales}</td>
+            <td className="border border-gray-300 p-2 text-center">
+              {extension.reduce((acc, curr) => acc + Number(curr.horasSemanales), 0)}
+            </td>
+            <td className="border border-gray-300 p-2 text-center">
+              {extension.reduce((acc, curr) => acc + Number(curr.horasSemestrales), 0)}
+            </td>
             <td className="border border-gray-300 p-2" colSpan="2"></td>
           </tr>
         </tbody>
       </table>
     </div>
   );
-};
+});

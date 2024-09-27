@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
 import '../index.css';
 
-export const GestionAcademica = () => {
+export const GestionAcademica = forwardRef((props, ref) => {
   //Información del producto
   const productoOptionsMap = {
     'Participación como jurado y/o asesor académico en trabajos de grado': [
@@ -56,7 +56,9 @@ export const GestionAcademica = () => {
   };
 
   // Inicializar actividades de extensión con productos seleccionados
-  const [extension, setExtension] = useState([
+
+const generateInitialActividades = () => {
+  return [
     {
       actividad: 'Participación como jurado y/o asesor académico en trabajos de grado',
       horasSemanales: 0,
@@ -134,24 +136,34 @@ export const GestionAcademica = () => {
       descripcionActividad: '',
       producto: productoOptionsMap['Líder de resultados de aprendizaje'],
     },
-  ]);
+  ];
+};
+const [gestion, setGAcademica] = useState(generateInitialActividades());
+
+const vaciarActividades = () => {
+  setGAcademica(generateInitialActividades());
+};
+
+useImperativeHandle(ref, () => ({
+  vaciarActividades,
+}));
 //Funcion para gestionar las actualizaciones de los datos
-  const handleExtensionChange = (index, field, value) => {
-    const nuevasExtension = [...extension];
-    nuevasExtension[index][field] = field.includes('horas') ? Number(value) : value;
-    setExtension(nuevasExtension);
+  const handleGAcademicaChange = (index, field, value) => {
+    const nuevasExtension = [...gestion];
+    nuevasGAcademica[index][field] = field.includes('horas') ? Number(value) : value;
+    setGAcademica(nuevasGAcademica);
   };
 //Formula para mostrar el total de horas
-  const totalHorasSemanales = extension.reduce((acc, curr) => acc + curr.horasSemanales, 0);
-  const totalHorasSemestrales = extension.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
+  const totalHorasSemanales = gestion.reduce((acc, curr) => acc + curr.horasSemanales, 0);
+  const totalHorasSemestrales = gestion.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
 
   return (
     <div className="overflow-x-auto">
-      <h5 className="text-xl font-bold mb-2">Labores de Extensión</h5>
+      <h5 className="text-xl font-bold mb-2">Gestion Academica</h5>
       <table className="w-full border-collapse border border-gray-300 mb-4">
         <thead>
           <tr className="header-row">
-            <th colSpan="5" className="text-center p-2">Labores de Extensión</th>
+            <th colSpan="5" className="text-center p-2">Gestion Academica</th>
           </tr>
           <tr className="bg-blue-200">
             <th className="border border-gray-300 p-4 header-cell">Actividad</th>
@@ -162,7 +174,7 @@ export const GestionAcademica = () => {
           </tr>
         </thead>
         <tbody>
-          {extension.map((item, index) => (
+          {gestion.map((item, index) => (
             <tr key={index}>
               <td className="border border-gray-300 p-2" style={{ width: '170px' }}>{item.actividad}</td>
               <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
@@ -171,7 +183,7 @@ export const GestionAcademica = () => {
                   min="0"
                   value={item.horasSemanales}
                   onChange={(e) =>
-                    handleExtensionChange(index, 'horasSemanales', e.target.value)
+                    handleGAcademicaChange(index, 'horasSemanales', e.target.value)
                   }
                   className="w-full p-1 border border-gray-300 rounded"
                 />
@@ -182,7 +194,7 @@ export const GestionAcademica = () => {
                   min="0"
                   value={item.horasSemestrales}
                   onChange={(e) =>
-                    handleExtensionChange(index, 'horasSemestrales', e.target.value)
+                    handleGAcademicaChange(index, 'horasSemestrales', e.target.value)
                   }
                   className="w-full p-1 border border-gray-300 rounded"
                 />
@@ -191,7 +203,7 @@ export const GestionAcademica = () => {
                 <textarea
                   value={item.descripcionActividad}
                   onChange={(e) =>
-                    handleExtensionChange(index, 'descripcionActividad', e.target.value)
+                    handleGAcademicaChange(index, 'descripcionActividad', e.target.value)
                   }
                   className="w-full p-1 border border-gray-300 rounded"
                 />
@@ -200,7 +212,7 @@ export const GestionAcademica = () => {
                 <CheckboxDropdown
                   options={item.producto}
                   selectedOptions={item.producto}
-                  onChange={(selected) => handleExtensionChange(index, 'producto', selected)}
+                  onChange={(selected) => handleGAcademicaChange(index, 'producto', selected)}
                 />
               </td>
             </tr>
@@ -217,4 +229,4 @@ export const GestionAcademica = () => {
       </table>
     </div>
   );
-};
+});

@@ -1,8 +1,8 @@
 import React, { useState, useRef } from "react";
 import '../index.css';
-import { EnviosDecano } from '../components/EnviosDecano';
+import { EnviosDirector } from '../components/EnviosDirector';
 
-export const RevisionDecanoPage = () => {
+export const RevisionDirectorPage = () => {
   // Estado para manejar la pestaña activa
   const [value, setValue] = useState('1');
   // Referencia para el contenedor de la tabla
@@ -21,7 +21,7 @@ export const RevisionDecanoPage = () => {
         {/* Título con sticky */}
         <h3>AGENDAS ENVIADAS</h3>
         <div>
-        <EnviosDecano />
+        <EnviosDirector />
       </div>
       </div>
     </>

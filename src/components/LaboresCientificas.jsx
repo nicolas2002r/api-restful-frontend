@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
 import '../index.css';
 
-export const LaboresCientificas = () => {
+export const LaboresCientificas = forwardRef((props, ref) => {
   const productoOptionsMap = {
     'Gestión de semilleros de investigación': [
       'INFORME DE GESTIÓN REALIZADA DURANTE EL PERIODO ACADÉMICO',
@@ -41,129 +41,143 @@ export const LaboresCientificas = () => {
     ],
   };
 
-  // Inicializar actividades académicas con productos seleccionados
-  const [academicas, setAcademicas] = useState([
-    {
-      actividad: 'Gestión de semilleros de investigación',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: [...productoOptionsMap['Gestión de semilleros de investigación']],
-    },
-    {
-      actividad: 'Elaboración de propuestas para convocatorias de CTeI',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: [...productoOptionsMap['Elaboración de propuestas para convocatorias de CTeI']],
-    },
-    {
-      actividad: 'Gestión de proyectos de investigación en CTeI',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: [...productoOptionsMap['Gestión de proyectos de investigación en CTeI']],
-    },
-    {
-      actividad: 'Dirección de grupos de investigación',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: [...productoOptionsMap['Dirección de grupos de investigación']],
-    },
-    {
-      actividad: 'Elaboración de artículos científicos y textos académicos',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: [...productoOptionsMap['Elaboración de artículos científicos y textos académicos']],
-    },
-  ]);
-
-  const handleAcademicasChange = (index, field, value) => {
-    const nuevasAcademicas = [...academicas];
-    nuevasAcademicas[index][field] =
-      field.includes('horas') ? Number(value) : value;
-    setAcademicas(nuevasAcademicas);
+  const generateInitialActividades = () => {
+    return [
+      {
+        actividad: 'Gestión de semilleros de investigación',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Gestión de semilleros de investigación']],
+      },
+      {
+        actividad: 'Elaboración de propuestas para convocatorias de CTeI',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Elaboración de propuestas para convocatorias de CTeI']],
+      },
+      {
+        actividad: 'Gestión de proyectos de investigación en CTeI',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Gestión de proyectos de investigación en CTeI']],
+      },
+      {
+        actividad: 'Dirección de grupos de investigación',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Dirección de grupos de investigación']],
+      },
+      {
+        actividad: 'Elaboración de artículos científicos y textos académicos',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: [...productoOptionsMap['Elaboración de artículos científicos y textos académicos']],
+      },
+    ];
   };
 
-  const totalHorasSemanales =
-    academicas.reduce((acc, curr) => acc + curr.horasSemanales, 0);
+  const [cientificas, setCientificas] = useState(generateInitialActividades());
 
-  const totalHorasSemestrales =
-    academicas.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
+  const vaciarActividades = () => {
+    setCientificas(generateInitialActividades());
+  };
+
+  useImperativeHandle(ref, () => ({
+    vaciarActividades,
+  }));
+
+  const handleCientificasChange = (index, field, value) => {
+    const nuevasCientificas = [...cientificas];
+    nuevasCientificas[index][field] =
+      field.includes('horas') ? Number(value) : value;
+    setCientificas(nuevasCientificas);
+  };
+
+  const totalHorasSemanalesCientificas = cientificas.reduce((acc, curr) => acc + curr.horasSemanales, 0);
+  const totalHorasSemestralesCientificas = cientificas.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
 
   return (
     <div className="overflow-x-auto">
-      <h5 className="text-xl font-bold mb-2">Labores Académicas</h5>
-      <table className="w-full border-collapse border border-gray-300 mb-4">
-        <thead>
-          <tr className="header-row">
-            <th colSpan="5" className="text-center p-2">Labores Científicas</th>
+    <h5 className="text-xl font-bold mb-2">Labores Cientificas</h5>
+    <table className="w-full border-collapse border border-gray-300 mb-4">
+      <thead>
+        <tr className="header-row">
+          <th colSpan="5" className="text-center p-2">Labores Científicas</th>
+        </tr>
+        <tr className="bg-blue-200">
+          <th className="border border-gray-300 p-4 header-cell">Actividad</th>
+          <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semanales)</th>
+          <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semestrales)</th>
+          <th className="border border-gray-300 p-4 header-cell">Descripción de la Actividad</th>
+          <th className="border border-gray-300 p-2 header-cell">Producto</th>
+        </tr>
+      </thead>
+      <tbody>
+        {cientificas.map((item, index) => (
+          <tr key={index}>
+            <td className="border border-gray-300 p-2" style={{ width: '170px' }}>{item.actividad}</td>
+            <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
+              <input
+                type="number"
+                min="0"
+                value={item.horasSemanales}
+                onChange={(e) =>
+                  handleCientificasChange(index, 'horasSemanales', e.target.value)
+                }
+                className="w-full p-1 border border-gray-300 rounded"
+              />
+            </td>
+            <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
+              <input
+                type="number"
+                min="0"
+                value={item.horasSemestrales}
+                onChange={(e) =>
+                  handleCientificasChange(index, 'horasSemestrales', e.target.value)
+                }
+                className="w-full p-1 border border-gray-300 rounded"
+              />
+            </td>
+            <td className="border border-gray-300 p-2">
+              <textarea
+                value={item.descripcionActividad}
+                onChange={(e) =>
+                  handleCientificasChange(index, 'descripcionActividad', e.target.value)
+                }
+                className="w-full p-1 border border-gray-300 rounded"
+                rows="4"
+              ></textarea>
+            </td>
+            <td className="border border-gray-300 p-2">
+              <CheckboxDropdown
+                options={productoOptionsMap[item.actividad] || []}
+                selectedOptions={item.producto}
+                onChange={(selected) =>
+                  handleCientificasChange(index, 'producto', selected)
+                }
+              />
+            </td>
           </tr>
-          <tr className="bg-blue-200">
-            <th className="border border-gray-300 p-4 header-cell">Actividad</th>
-            <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semanales)</th>
-            <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semestrales)</th>
-            <th className="border border-gray-300 p-4 header-cell">Descripción de la Actividad</th>
-            <th className="border border-gray-300 p-2 header-cell">Producto</th>
-          </tr>
-        </thead>
+        ))}
+        </tbody>
         <tbody>
-          {academicas.map((item, index) => (
-            <tr key={index}>
-              <td className="border border-gray-300 p-2" style={{ width: '170px' }}>{item.actividad}</td>
-              <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
-                <input
-                  type="number"
-                  min="0"
-                  value={item.horasSemanales}
-                  onChange={(e) =>
-                    handleAcademicasChange(index, 'horasSemanales', e.target.value)
-                  }
-                  className="w-full p-1 border border-gray-300 rounded"
-                />
-              </td>
-              <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
-                <input
-                  type="number"
-                  min="0"
-                  value={item.horasSemestrales}
-                  onChange={(e) =>
-                    handleAcademicasChange(index, 'horasSemestrales', e.target.value)
-                  }
-                  className="w-full p-1 border border-gray-300 rounded"
-                />
-              </td>
-              <td className="border border-gray-300 p-2">
-                <textarea
-                  value={item.descripcionActividad}
-                  onChange={(e) =>
-                    handleAcademicasChange(index, 'descripcionActividad', e.target.value)
-                  }
-                  className="w-full p-1 border border-gray-300 rounded"
-                  rows="4"
-                ></textarea>
-              </td>
-              <td className="border border-gray-300 p-2">
-                <CheckboxDropdown
-                  options={productoOptionsMap[item.actividad] || []}
-                  selectedOptions={item.producto}
-                  onChange={(selected) =>
-                    handleAcademicasChange(index, 'producto', selected)
-                  }
-                />
-              </td>
-            </tr>
-          ))}
           <tr className="bg-gray-200 font-bold">
             <td className="border border-gray-300 p-2">Total</td>
-            <td className="border border-gray-300 p-2 text-center">{totalHorasSemanales}</td>
-            <td className="border border-gray-300 p-2 text-center">{totalHorasSemestrales}</td>
+            <td className="border border-gray-300 p-2 text-center">
+              {cientificas.reduce((acc, curr) => acc + Number(curr.horasSemanales), 0)}
+            </td>
+            <td className="border border-gray-300 p-2 text-center">
+              {cientificas.reduce((acc, curr) => acc + Number(curr.horasSemestrales), 0)}
+            </td>
             <td className="border border-gray-300 p-2" colSpan="2"></td>
           </tr>
         </tbody>
       </table>
     </div>
   );
-};
+});

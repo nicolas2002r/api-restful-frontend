@@ -1,3 +1,4 @@
+// RegistrationForm.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from 'reactstrap';
 import '../index.css';
@@ -36,7 +37,7 @@ const RegistrationForm = ({
 
   // Manejar la selección de programas
   const onProgramSelect = (program) => {
-    if (form.Rol === "Docente") {
+    if (form.Rol.includes("Docente")) {
       // Para Docentes, manejar múltiples selecciones
       if (form.Programas.includes(program)) {
         handleProgramChange(form.Programas.filter(p => p !== program));
@@ -123,7 +124,8 @@ const RegistrationForm = ({
             required
             className="form-control"
           >
-            <option value="Docente">Docente</option>
+            <option value="Docente de Planta">Docente de Planta</option>
+            <option value="Docente de Medio Tiempo">Docente de Medio Tiempo</option>
             <option value="Director">Director</option>
             <option value="Decano">Decano</option>
           </select>
@@ -149,7 +151,7 @@ const RegistrationForm = ({
             >
               {availablePrograms.map((program, index) => (
                 <div key={index} className="dropdown-item-custom">
-                  {form.Rol === "Docente" ? (
+                  {form.Rol.includes("Docente") ? (
                     // Para Docentes, checkboxes para múltiples selecciones
                     <div className="checkbox-group">
                       <input

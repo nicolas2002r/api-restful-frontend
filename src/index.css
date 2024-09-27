@@ -76,7 +76,7 @@ code {
   overflow-y: 550px; /* Barra de desplazamiento vertical */
   position: relative; /* Mantiene la posición relativa */
 }
-/* Texto centrado */
+/* Texto a la izquierda */
 h4 {
   color: #000; /* Color negro */
   font-size: 24px; /* Tamaño del texto */
@@ -85,7 +85,16 @@ h4 {
   border-bottom: 2px solid #4caf50; /* Línea verde bajo el texto */
   background-color: #FFFFFF;
 }
-
+/*Texto centrado*/
+h3 {
+  color: #000; /* Color negro */
+  font-size: 24px; /* Tamaño del texto */
+  margin: 0; /* Sin margen adicional */
+  padding-bottom: 10px; /* Espaciado en la parte inferior */
+  border-bottom: 2px solid #4caf50; /* Línea verde bajo el texto */
+  background-color: #FFFFFF;
+  text-align: center; /*Centrado*/
+}
 /*///ESTILOS DE REGISTRO DE USUARIO///*/
 
 /*Etilos para dividir las columnas de registro y tabla*/
@@ -170,16 +179,18 @@ input:focus {
 .nav-item-custom:last-child {
   margin-right: 0; /* Elimina el margen en el último ítem si es necesario */
 }
-
+/*colores de items de las navbar*/
 .navbar-custom .nav-link.active {
-  background-color: #00A651; /* Color verde para el ítem activo */
-  color: white; /* Cambia el color del texto a blanco para mejor contraste */
-  border-radius: 4px; /* Opcional: redondear las esquinas */
+  background-color: transparent; /* Fondo transparente */
+  color: #00A651; /* Color verde para el texto */
 }
 
-.navbar-custom .nav-link {
-  color: black; /* Color de texto predeterminado */
+.navbar-custom .nav-link:hover, 
+.navbar-custom .nav-link:focus {
+  color: #00A651;
 }
+
+
 
 /*///DROPDOWN REGISTRO DE USUARIO///*/
 /* Estilos para el botón del dropdown */
@@ -289,7 +300,7 @@ input:focus {
 .header-row th,
 .header-cell {
   background-color: #00A654;
-  color: white; 
+  color: white;
   text-align: center;
 }
 /*/// Botones generales de los modulos///*/
@@ -314,4 +325,8 @@ button.B-general {
 button.B-general:hover {
   background-color: #038a44; 
 }
-
+/*Selección de la tabla docente*/
+.selected-row {
+  box-shadow: 0 4px 8px #00A651; /* Sombra */
+  cursor: pointer; /* Cambia el cursor a pointer */
+}

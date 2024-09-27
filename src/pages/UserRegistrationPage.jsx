@@ -23,7 +23,7 @@ export const UserRegistrationPage = () => {
       Apellidos: "Ariel Gonzaless",
       Cedula: "12312312",
       Correo: "jesus.gonzales@corhuila.edu.co",
-      Rol: "Docente",
+      Rol: "Docente de Planta",
       Programas: ["Ing. Renovables", "Ing. Sistemas"], // Añadido Programas
     },
     {
@@ -41,6 +41,14 @@ export const UserRegistrationPage = () => {
       Correo: "carlos.perez@corhuila.edu.co",
       Rol: "Decano",
       Programas: ["Ing. Sistemas"], // Solo un programa
+    },
+    {
+      Nombres: "Ana",
+      Apellidos: "Martinez",
+      Cedula: "34567890",
+      Correo: "ana.martinez@corhuila.edu.co",
+      Rol: "Docente de Medio Tiempo",
+      Programas: ["Ing. Ambiental"], // Solo un programa
     },
   ]);
 

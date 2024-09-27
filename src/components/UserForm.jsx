@@ -44,7 +44,13 @@ export const Userform = () => {
       console.log("Autenticado como Docente");
       login();
       navigate("/AgendaDocente");
-    } 
+    }
+    // Autenticación para el rol Director de programa
+    else if (idNumber === '9876' && password === '9876') {
+      console.log("Autenticado como Director de Programa");
+      login();
+      navigate("/RevisionDirector"); // Redirige a la vista correspondiente del decano
+    }
     // Autenticación para el rol de Decano (usuario '1111')
     else if (idNumber === '1111' && password === '1111') {
       console.log("Autenticado como Decano");

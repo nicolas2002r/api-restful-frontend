@@ -159,11 +159,19 @@ useImperativeHandle(ref, () => ({
 
   return (
     <div className="overflow-x-auto">
+<<<<<<< HEAD
       <h5 className="text-xl font-bold mb-2">Gestion Academica</h5>
       <table className="w-full border-collapse border border-gray-300 mb-4">
         <thead>
           <tr className="header-row">
             <th colSpan="5" className="text-center p-2">Gestion Academica</th>
+=======
+      <h5 className="text-xl font-bold mb-2">Actividades de Gestión Academica - Administrativa</h5>
+      <table className="w-full border-collapse border border-gray-300 mb-4">
+        <thead>
+          <tr className="header-row">
+            <th colSpan="5" className="text-center p-2">Gestión Academica - Administrativa</th>
+>>>>>>> d939b2f67e20aff8a121fd735dc40612b5f2a508
           </tr>
           <tr className="bg-blue-200">
             <th className="border border-gray-300 p-4 header-cell">Actividad</th>

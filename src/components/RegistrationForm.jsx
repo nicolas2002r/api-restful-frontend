@@ -194,7 +194,27 @@ const RegistrationForm = ({
           )}
         </div>
       </div>
-
+      {form.Rol === "Docente de Planta" || form.Rol === "Docente de Medio Tiempo" ? (
+        <div className="form-group-custom">
+          <label htmlFor="TipoInvestigador">Nivel de Investigador</label>
+          <div className="input-group-custom">
+            <i className="fas fa-flask input-icon"></i>
+            <select
+              name="TipoInvestigador"
+              value={form.TipoInvestigador || ""}
+              onChange={handleChange}
+              required
+              className="form-control"
+            >
+              <option value="">Selecciona una opción</option>
+              <option value="Investigador Asociado">Investigador Asociado</option>
+              <option value="Investigador Junior">Investigador Junior</option>
+              <option value="Sin Categoría">Sin Categoría</option>
+              <option value="Coinvestigador">Coinvestigador</option>
+            </select>
+          </div>
+        </div>
+      ) : null}
       <div className="button-container">
         <Button color="success" type="submit" className="me-3">
           {editIndex !== null ? "Guardar cambios" : "Registrar"}

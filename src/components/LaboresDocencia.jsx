@@ -1,11 +1,12 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { Table, Button, Modal, Form } from 'react-bootstrap';
+import Swal from 'sweetalert2';
 import '../index.css';
 
 export const LaboresDocencia = forwardRef((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [entries, setEntries] = useState([]);
-  const [selectedRowIndex, setSelectedRowIndex] = useState(null); // Estado para manejar la fila seleccionada
+  const [selectedRowIndex, setSelectedRowIndex] = useState(null);
 
   const [newEntry, setNewEntry] = useState({
     asignatura: '',
@@ -22,10 +23,9 @@ export const LaboresDocencia = forwardRef((props, ref) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    // Validación para horas semanales: solo números positivos
     if (name === 'horasSemanales') {
       const numValue = parseFloat(value);
-      if (numValue < 0) return; // Si el valor es negativo, no hacer nada
+      if (numValue < 0) return;
     }
 
     setNewEntry({ ...newEntry, [name]: value });
@@ -33,8 +33,6 @@ export const LaboresDocencia = forwardRef((props, ref) => {
 
   const AgregarEntrada = (e) => {
     e.preventDefault();
-    
-    // Calcular las horas semestrales y redondearlas
     const horasSemestre = Math.round(newEntry.horasSemanales * 16);
 
     setEntries([...entries, { ...newEntry, horasSemestre }]);
@@ -54,7 +52,7 @@ export const LaboresDocencia = forwardRef((props, ref) => {
       const updatedEntries = [...entries];
       updatedEntries.splice(selectedRowIndex, 1);
       setEntries(updatedEntries);
-      setSelectedRowIndex(null); // Desmarcar la selección después de eliminar
+      setSelectedRowIndex(null);
     }
   };
 
@@ -71,6 +69,9 @@ export const LaboresDocencia = forwardRef((props, ref) => {
     vaciarActividades() {
       setEntries([]);
       setSelectedRowIndex(null);
+    },
+    getEntriesCount() {
+      return entries.length;
     }
   }));
 

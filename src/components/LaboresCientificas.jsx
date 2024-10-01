@@ -1,4 +1,5 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import Swal from 'sweetalert2';
 import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
 import '../index.css';
 
@@ -34,10 +35,8 @@ export const LaboresCientificas = forwardRef((props, ref) => {
       'ARTÍCULO(S) DE INVESTIGACIÓN SOMETIDO(S)',
       'ARTÍCULO(S) PUBLICADO(S)',
       'LIBRO RESULTADO DE INVESTIGACIÓN PUBLICADO',
-      'PROPUESTA DE LIBRO RESULTADO DE INVESTIGACIÓN ELABORADA PARA SU PUBLICACIÓN',
-      'CAPÍTULOS DE LIBRO RESULTADO DE INVESTIGACIÓN PUBLICADO',
-      'PROPUESTA DE CAPÍTULO RESULTADO DE INVESTIGACIÓN EN REVISIÓN POR PARES',
-      'PUBLICACIÓN DE LIBRO Y/O CAPÍTULO DE LIBRO DE APSC PUBLICADO',
+      'PROPUESTA DE LIBRO RESULTADO DE INVESTIGACIÓN ELABORADA',
+      'CAPÍTULOS DE LIBRO RESULTADO DE INVESTIGACIÓN PUBLICADO',
     ],
   };
 
@@ -93,8 +92,51 @@ export const LaboresCientificas = forwardRef((props, ref) => {
 
   const handleCientificasChange = (index, field, value) => {
     const nuevasCientificas = [...cientificas];
-    nuevasCientificas[index][field] =
-      field.includes('horas') ? Number(value) : value;
+    
+    if (field === 'horasSemanales') {
+      // Validar horas según las restricciones
+      const actividad = nuevasCientificas[index].actividad;
+
+      // Restricciones específicas para cada actividad científica
+      if (actividad === 'Gestión de semilleros de investigación' && Number(value) > 3) {
+        Swal.fire({
+          title: 'Error',
+          text: 'La gestión de semilleros de investigación no puede superar 3 horas semanales.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Elaboración de propuestas para convocatorias de CTeI' && Number(value) > 2) {
+        Swal.fire({
+          title: 'Error',
+          text: 'La elaboración de propuestas para convocatorias no puede superar 2 horas semanales.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Dirección de grupos de investigación' && Number(value) > 3) {
+        Swal.fire({
+          title: 'Error',
+          text: 'La dirección de grupos de investigación no puede superar 3 horas semanales.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Elaboración de artículos científicos y textos académicos' && Number(value) > 2) {
+        Swal.fire({
+          title: 'Error',
+          text: 'La elaboración de artículos científicos no puede superar 2 horas semanales.',
+          icon: 'error',
+        });
+        return;
+      }
+
+      nuevasCientificas[index].horasSemanales = Number(value);
+      nuevasCientificas[index].horasSemestrales = Number(value) * 16;
+    } else {
+      nuevasCientificas[index][field] = value;
+    }
+
     setCientificas(nuevasCientificas);
   };
 
@@ -103,67 +145,59 @@ export const LaboresCientificas = forwardRef((props, ref) => {
 
   return (
     <div className="overflow-x-auto">
-    <h5 className="text-xl font-bold mb-2">Labores Cientificas</h5>
-    <table className="w-full border-collapse border border-gray-300 mb-4">
-      <thead>
-        <tr className="header-row">
-          <th colSpan="5" className="text-center p-2">Labores Científicas</th>
-        </tr>
-        <tr className="bg-blue-200">
-          <th className="border border-gray-300 p-4 header-cell">Actividad</th>
-          <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semanales)</th>
-          <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semestrales)</th>
-          <th className="border border-gray-300 p-4 header-cell">Descripción de la Actividad</th>
-          <th className="border border-gray-300 p-2 header-cell">Producto</th>
-        </tr>
-      </thead>
-      <tbody>
-        {cientificas.map((item, index) => (
-          <tr key={index}>
-            <td className="border border-gray-300 p-2" style={{ width: '170px' }}>{item.actividad}</td>
-            <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
-              <input
-                type="number"
-                min="0"
-                value={item.horasSemanales}
-                onChange={(e) =>
-                  handleCientificasChange(index, 'horasSemanales', e.target.value)
-                }
-                className="w-full p-1 border border-gray-300 rounded"
-              />
-            </td>
-            <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
-              <input
-                type="number"
-                min="0"
-                value={item.horasSemestrales}
-                onChange={(e) =>
-                  handleCientificasChange(index, 'horasSemestrales', e.target.value)
-                }
-                className="w-full p-1 border border-gray-300 rounded"
-              />
-            </td>
-            <td className="border border-gray-300 p-2">
-              <textarea
-                value={item.descripcionActividad}
-                onChange={(e) =>
-                  handleCientificasChange(index, 'descripcionActividad', e.target.value)
-                }
-                className="w-full p-1 border border-gray-300 rounded"
-                rows="4"
-              ></textarea>
-            </td>
-            <td className="border border-gray-300 p-2">
-              <CheckboxDropdown
-                options={productoOptionsMap[item.actividad] || []}
-                selectedOptions={item.producto}
-                onChange={(selected) =>
-                  handleCientificasChange(index, 'producto', selected)
-                }
-              />
-            </td>
+      <h5 className="text-xl font-bold mb-2">Labores Científicas</h5>
+      <table className="w-full border-collapse border border-gray-300 mb-4">
+        <thead>
+          <tr className="header-row">
+            <th colSpan="5" className="text-center p-2">Labores Científicas</th>
           </tr>
-        ))}
+          <tr className="bg-blue-200">
+            <th className="border border-gray-300 p-4 header-cell">Actividad</th>
+            <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semanales)</th>
+            <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semestrales)</th>
+            <th className="border border-gray-300 p-4 header-cell">Descripción de la Actividad</th>
+            <th className="border border-gray-300 p-2 header-cell">Producto</th>
+          </tr>
+        </thead>
+        <tbody>
+          {cientificas.map((item, index) => (
+            <tr key={index}>
+              <td className="border border-gray-300 p-2" style={{ width: '170px' }}>{item.actividad}</td>
+              <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
+                <input
+                  type="number"
+                  min="0"
+                  value={item.horasSemanales}
+                  onChange={(e) => handleCientificasChange(index, 'horasSemanales', e.target.value)}
+                  className="w-full p-1 border border-gray-300 rounded"
+                />
+              </td>
+              <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
+                <input
+                  type="number"
+                  min="0"
+                  value={item.horasSemestrales}
+                  onChange={(e) => handleCientificasChange(index, 'horasSemestrales', e.target.value)}
+                  className="w-full p-1 border border-gray-300 rounded"
+                />
+              </td>
+              <td className="border border-gray-300 p-2">
+                <textarea
+                  value={item.descripcionActividad}
+                  onChange={(e) => handleCientificasChange(index, 'descripcionActividad', e.target.value)}
+                  className="w-full p-1 border border-gray-300 rounded"
+                  rows="4"
+                ></textarea>
+              </td>
+              <td className="border border-gray-300 p-2">
+                <CheckboxDropdown
+                  options={productoOptionsMap[item.actividad] || []}
+                  selectedOptions={item.producto}
+                  onChange={(selected) => handleCientificasChange(index, 'producto', selected)}
+                />
+              </td>
+            </tr>
+          ))}
         </tbody>
         <tbody>
           <tr className="bg-gray-200 font-bold">

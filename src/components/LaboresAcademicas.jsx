@@ -1,40 +1,26 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
+import Swal from 'sweetalert2';
 import '../index.css';
 
 export const LaboresAcademicas = forwardRef((props, ref) => {
   const productoOptionsMap = {
     'Preparación de clases': [
       'SYLLABUS DE LA ASIGNATURA',
-      'MATERIAL EDUCATIVO SUBIDO EN LA PLATAFORMA MOODLE, EN EL CURSO DE CADA ASIGNATURA O MÓDULO',
-      'MATERIALES EDUCATIVOS UTILIZADOS EN CADA ENCUENTRO SINCRÓNICO REALIZADO',
-      'RECURSOS (VIDEOS, LINKS, INFOGRAFÍAS, DIAPOSITIVAS, DOCUMENTOS BIBLIOGRÁFICOS U OTROS RECURSOS EDUCATIVOS)',
-      'ACTIVIDADES (CUESTIONARIOS, EJERCICIOS, TALLERES, TAREAS, FOROS U OTRAS)',
+      'MATERIAL EDUCATIVO SUBIDO EN LA PLATAFORMA MOODLE',
+      'MATERIALES EDUCATIVOS UTILIZADOS EN CADA ENCUENTRO',
+      'RECURSOS (VIDEOS, LINKS, INFOGRAFÍAS, DIAPOSITIVAS)',
+      'ACTIVIDADES (CUESTIONARIOS, TAREAS, FOROS)',
     ],
     'Evaluación de aprendizaje a estudiantes': [
-      'PLANILLA DE CALIFICACIONES (CORHUILAPLUS+)',
+      'PLANILLA DE CALIFICACIONES',
       'EVIDENCIAS DE AUTOEVALUACIÓN',
-      'EVIDENCIAS DE COEVALUACIÓN',
-      'NOTA: CUESTIONARIOS, GUÍAS PARA EJERCICIOS, TALLERES',
+      'NOTA: CUESTIONARIOS, GUÍAS',
     ],
     'Gestión de eventos académicos': [
       'FO-GD-83 PLANEACIÓN ACTIVIDADES ACADÉMICAS',
-      'FO-GD-84 AGENDA PARA ACTIVIDADES ACADÉMICAS',
-      'FO-GD-85 PRESUPUESTO PARA ACTIVIDADES ACADÉMICAS',
+      'FO-GD-84 AGENDA PARA ACTIVIDADES',
+      'FO-GD-85 PRESUPUESTO ACTIVIDADES ACADÉMICAS',
       'LISTADO DE ASISTENCIA',
-    ],
-    'Acompañamiento académico a estudiantes': [
-      'TRES REPORTES SOBRE EL DESARROLLO DEL ACOMPAÑAMIENTO',
-      'SOPORTE DE LAS REMISIONES DE ESTUDIANTES',
-    ],
-    'Cursos de fortalecimiento dirigido a estudiantes': [
-      'INFORME EJECUTIVO DEL DESARROLLO DE LA ACTIVIDAD',
-      'LISTADO DE ASISTENCIA',
-      'RECURSOS EDUCATIVOS',
-    ],
-    'Asesoría en emprendimiento': [
-      'INFORME EJECUTIVO DEL DESARROLLO DE LA ACTIVIDAD',
-      'MATERIAL DE APOYO',
     ],
   };
 
@@ -68,72 +54,31 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
       horasSemanales: 0,
       horasSemestrales: 0,
       descripcionActividad: '',
-      producto: [...productoOptionsMap['Acompañamiento académico a estudiantes']],
+      producto: [],
     },
     {
       actividad: 'Cursos de fortalecimiento dirigido a estudiantes',
       horasSemanales: 0,
       horasSemestrales: 0,
       descripcionActividad: '',
-      producto: [...productoOptionsMap['Cursos de fortalecimiento dirigido a estudiantes']],
+      producto: [],
     },
     {
       actividad: 'Asesoría en emprendimiento',
       horasSemanales: 0,
       horasSemestrales: 0,
       descripcionActividad: '',
-      producto: [...productoOptionsMap['Asesoría en emprendimiento']],
+      producto: [],
     },
   ]);
 
-  const vaciarActividades = () => {
-    setAcademicas([
-      {
-        actividad: 'Preparación de clases',
-        horasSemanales: '',
-        horasSemestrales: '',
-        descripcionActividad: '',
-        producto: [...productoOptionsMap['Preparación de clases']],
-      },
-      {
-        actividad: 'Evaluación de aprendizaje a estudiantes',
-        horasSemanales: '',
-        horasSemestrales: '',
-        descripcionActividad: '',
-        producto: [...productoOptionsMap['Evaluación de aprendizaje a estudiantes']],
-      },
-      {
-        actividad: 'Gestión de eventos académicos',
-        horasSemanales: '',
-        horasSemestrales: '',
-        descripcionActividad: '',
-        producto: [...productoOptionsMap['Gestión de eventos académicos']],
-      },
-    ]);
+  // Total de horas semanales de docencia registradas
+  const totalHorasDocencia = props.totalHorasDocencia;
 
-    setFormativas([
-      {
-        actividad: 'Acompañamiento académico a estudiantes',
-        horasSemanales: 0,
-        horasSemestrales: 0,
-        descripcionActividad: '',
-        producto: [...productoOptionsMap['Acompañamiento académico a estudiantes']],
-      },
-      {
-        actividad: 'Cursos de fortalecimiento dirigido a estudiantes',
-        horasSemanales: 0,
-        horasSemestrales: 0,
-        descripcionActividad: '',
-        producto: [...productoOptionsMap['Cursos de fortalecimiento dirigido a estudiantes']],
-      },
-      {
-        actividad: 'Asesoría en emprendimiento',
-        horasSemanales: 0,
-        horasSemestrales: 0,
-        descripcionActividad: '',
-        producto: [...productoOptionsMap['Asesoría en emprendimiento']],
-      },
-    ]);
+  const vaciarActividades = () => {
+    // Reiniciar actividades académicas y formativas
+    setAcademicas(academicas.map(a => ({ ...a, horasSemanales: 0, horasSemestrales: 0 })));
+    setFormativas(formativas.map(f => ({ ...f, horasSemanales: 0, horasSemestrales: 0 })));
   };
 
   useImperativeHandle(ref, () => ({
@@ -142,32 +87,80 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
 
   const handleAcademicasChange = (index, field, value) => {
     const nuevasAcademicas = [...academicas];
-    nuevasAcademicas[index][field] =
-      field.includes('horas') ? Number(value) : value;
+
+    if (field === 'horasSemanales') {
+      // Restricciones: Validar horas según el tipo de actividad
+      const horasDocencia = totalHorasDocencia; // Horas de docencia registradas
+      const maxHoras = (horasDocencia * 0.2).toFixed(2); // 20% de horas para preparación o evaluación
+
+      if (nuevasAcademicas[index].actividad === 'Preparación de clases' || nuevasAcademicas[index].actividad === 'Evaluación de aprendizaje a estudiantes') {
+        if (Number(value) > maxHoras) {
+          Swal.fire({
+            title: 'Error',
+            text: `Las horas semanales no pueden exceder el 20% de las horas de docencia (${maxHoras} horas).`,
+            icon: 'error',
+          });
+          return;
+        }
+      }
+
+      if (nuevasAcademicas[index].actividad === 'Gestión de eventos académicos' && Number(value) > 1) {
+        Swal.fire({
+          title: 'Error',
+          text: 'La gestión de eventos académicos tiene un límite de 1 hora semanal.',
+          icon: 'error',
+        });
+        return;
+      }
+
+      nuevasAcademicas[index].horasSemanales = Number(value);
+      nuevasAcademicas[index].horasSemestrales = Number(value) * 16;
+    } else {
+      nuevasAcademicas[index][field] = value;
+    }
+
     setAcademicas(nuevasAcademicas);
   };
 
   const handleFormativasChange = (index, field, value) => {
     const nuevasFormativas = [...formativas];
-    nuevasFormativas[index][field] =
-      field.includes('horas') ? Number(value) : value;
+
+    if (field === 'horasSemanales') {
+      const horasDocencia = totalHorasDocencia;
+      const maxHorasAcomp = (horasDocencia * 0.1).toFixed(2); // 10% para acompañamiento
+
+      if (nuevasFormativas[index].actividad === 'Acompañamiento académico a estudiantes' && Number(value) > maxHorasAcomp) {
+        Swal.fire({
+          title: 'Error',
+          text: `Las horas para acompañamiento académico no pueden exceder el 10% de las horas de docencia (${maxHorasAcomp} horas).`,
+          icon: 'error',
+        });
+        return;
+      }
+
+      if (nuevasFormativas[index].actividad === 'Asesoría en emprendimiento' && Number(value) > 2) {
+        Swal.fire({
+          title: 'Error',
+          text: 'La asesoría en emprendimiento tiene un límite de 2 horas por emprendimiento.',
+          icon: 'error',
+        });
+        return;
+      }
+
+      nuevasFormativas[index].horasSemanales = Number(value);
+      nuevasFormativas[index].horasSemestrales = Number(value) * 16;
+    } else {
+      nuevasFormativas[index][field] = value;
+    }
+
     setFormativas(nuevasFormativas);
   };
 
-   // Calcular totales para académicas y formativas
-   const totalHorasSemanalesAcademicas = academicas.reduce((acc, curr) => acc + curr.horasSemanales, 0);
-   const totalHorasSemestralesAcademicas = academicas.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
- 
-   const totalHorasSemanalesFormativas = formativas.reduce((acc, curr) => acc + curr.horasSemanales, 0);
-   const totalHorasSemestralesFormativas = formativas.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
- 
-   // Sumar totales
-   const totalHorasSemanales = totalHorasSemanalesAcademicas + totalHorasSemanalesFormativas;
-   const totalHorasSemestrales = totalHorasSemestralesAcademicas + totalHorasSemestralesFormativas;
- 
   return (
     <div className="overflow-x-auto">
       <h5 className="text-xl font-bold mb-2">Labores Académicas y Formativas</h5>
+
+      {/* Labores Académicas */}
       <table className="w-full border-collapse border border-gray-300 mb-4">
         <thead>
           <tr className="header-row">
@@ -190,9 +183,7 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
                   type="number"
                   min="0"
                   value={item.horasSemanales}
-                  onChange={(e) =>
-                    handleAcademicasChange(index, 'horasSemanales', e.target.value)
-                  }
+                  onChange={(e) => handleAcademicasChange(index, 'horasSemanales', e.target.value)}
                   className="w-full p-1 border border-gray-300 rounded"
                 />
               </td>
@@ -201,18 +192,14 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
                   type="number"
                   min="0"
                   value={item.horasSemestrales}
-                  onChange={(e) =>
-                    handleAcademicasChange(index, 'horasSemestrales', e.target.value)
-                  }
+                  readOnly
                   className="w-full p-1 border border-gray-300 rounded"
                 />
               </td>
               <td className="border border-gray-300 p-2">
                 <textarea
                   value={item.descripcionActividad}
-                  onChange={(e) =>
-                    handleAcademicasChange(index, 'descripcionActividad', e.target.value)
-                  }
+                  onChange={(e) => handleAcademicasChange(index, 'descripcionActividad', e.target.value)}
                   className="w-full p-1 border border-gray-300 rounded"
                   rows="4"
                 ></textarea>
@@ -221,10 +208,7 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
                 <CheckboxDropdown
                   options={productoOptionsMap[item.actividad] || []}
                   selectedOptions={item.producto}
-                  onChange={(selected) =>
-                    handleAcademicasChange(index, 'producto', selected)
-                  }
-
+                  onChange={(selected) => handleAcademicasChange(index, 'producto', selected)}
                 />
               </td>
             </tr>
@@ -232,6 +216,7 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
         </tbody>
       </table>
 
+      {/* Labores Formativas */}
       <table className="w-full border-collapse border border-gray-300 mb-4">
         <thead>
           <tr className="header-row">
@@ -254,9 +239,7 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
                   type="number"
                   min="0"
                   value={item.horasSemanales}
-                  onChange={(e) =>
-                    handleFormativasChange(index, 'horasSemanales', e.target.value)
-                  }
+                  onChange={(e) => handleFormativasChange(index, 'horasSemanales', e.target.value)}
                   className="w-full p-1 border border-gray-300 rounded"
                 />
               </td>
@@ -265,18 +248,14 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
                   type="number"
                   min="0"
                   value={item.horasSemestrales}
-                  onChange={(e) =>
-                    handleFormativasChange(index, 'horasSemestrales', e.target.value)
-                  }
+                  readOnly
                   className="w-full p-1 border border-gray-300 rounded"
                 />
               </td>
               <td className="border border-gray-300 p-2">
                 <textarea
                   value={item.descripcionActividad}
-                  onChange={(e) =>
-                    handleFormativasChange(index, 'descripcionActividad', e.target.value)
-                  }
+                  onChange={(e) => handleFormativasChange(index, 'descripcionActividad', e.target.value)}
                   className="w-full p-1 border border-gray-300 rounded"
                   rows="4"
                 ></textarea>
@@ -285,9 +264,7 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
                 <CheckboxDropdown
                   options={productoOptionsMap[item.actividad] || []}
                   selectedOptions={item.producto}
-                  onChange={(selected) =>
-                    handleFormativasChange(index, 'producto', selected)
-                  }
+                  onChange={(selected) => handleFormativasChange(index, 'producto', selected)}
                 />
               </td>
             </tr>
@@ -296,12 +273,8 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
         <tbody>
           <tr className="bg-gray-200 font-bold">
             <td className="border border-gray-300 p-2">Total</td>
-            <td className="border border-gray-300 p-2 text-center">
-              {totalHorasSemanales}
-            </td>
-            <td className="border border-gray-300 p-2 text-center">
-              {totalHorasSemestrales}
-            </td>
+            <td className="border border-gray-300 p-2 text-center">{totalHorasDocencia}</td>
+            <td className="border border-gray-300 p-2 text-center"></td>
             <td className="border border-gray-300 p-2" colSpan="2"></td>
           </tr>
         </tbody>

@@ -1,9 +1,9 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
+import Swal from 'sweetalert2'; // Importamos SweetAlert para mostrar alertas
 import '../index.css';
 
 export const GestionAcademica = forwardRef((props, ref) => {
-  //Información del producto
   const productoOptionsMap = {
     'Participación como jurado y/o asesor académico en trabajos de grado': [
       'OFICIO DE RETROALIMENTACIÓN DE OPCIONES DE GRADO PARA PREGRADO Y POSGRADO - F0-GD-51 (POR TRABAJO DE GRADO ASIGNADO)',
@@ -55,115 +55,174 @@ export const GestionAcademica = forwardRef((props, ref) => {
     ],
   };
 
-  // Inicializar actividades de extensión con productos seleccionados
+  const generateInitialActividades = () => {
+    return [
+      {
+        actividad: 'Participación como jurado y/o asesor académico en trabajos de grado',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: productoOptionsMap['Participación como jurado y/o asesor académico en trabajos de grado'],
+      },
+      {
+        actividad: 'Participación en procesos de registros calificados',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: productoOptionsMap['Participación en procesos de registros calificados'],
+      },
+      {
+        actividad: 'Participación en procesos de acreditación',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: productoOptionsMap['Participación en procesos de acreditación'],
+      },
+      {
+        actividad: 'Participación en Consejos y Comités',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: productoOptionsMap['Participación en Consejos y Comités'],
+      },
+      {
+        actividad: 'Participación en procesos de autoevaluación',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: productoOptionsMap['Participación en procesos de autoevaluación'],
+      },
+      {
+        actividad: 'Participación en Investigaciones de mercado',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: productoOptionsMap['Participación en Investigaciones de mercado'],
+      },
+      {
+        actividad: 'Participación en procesos de formación de profesores',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: productoOptionsMap['Participación en procesos de formación de profesores'],
+      },
+      {
+        actividad: 'Programación y gestión de prácticas extramuros',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: productoOptionsMap['Programación y gestión de prácticas extramuros'],
+      },
+      {
+        actividad: 'Elaboración de exámenes para validaciones',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: productoOptionsMap['Elaboración de exámenes para validaciones'],
+      },
+      {
+        actividad: 'Líder de CTeI, extensión y proyección social',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: productoOptionsMap['Líder de CTeI, extensión y proyección social'],
+      },
+      {
+        actividad: 'Líder de resultados de aprendizaje',
+        horasSemanales: 0,
+        horasSemestrales: 0,
+        descripcionActividad: '',
+        producto: productoOptionsMap['Líder de resultados de aprendizaje'],
+      },
+    ];
+  };
 
-const generateInitialActividades = () => {
-  return [
-    {
-      actividad: 'Participación como jurado y/o asesor académico en trabajos de grado',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: productoOptionsMap['Participación como jurado y/o asesor académico en trabajos de grado'],
-    },
-    {
-      actividad: 'Participación en procesos de registros calificados',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: productoOptionsMap['Participación en procesos de registros calificados'],
-    },
-    {
-      actividad: 'Participación en procesos de acreditación',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: productoOptionsMap['Participación en procesos de acreditación'],
-    },
-    {
-      actividad: 'Participación en Consejos y Comités',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: productoOptionsMap['Participación en Consejos y Comités'],
-    },
-    {
-      actividad: 'Participación en procesos de autoevaluación',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: productoOptionsMap['Participación en procesos de autoevaluación'],
-    },
-    {
-      actividad: 'Participación en Investigaciones de mercado',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: productoOptionsMap['Participación en Investigaciones de mercado'],
-    },
-    {
-      actividad: 'Participación en procesos de formación de profesores',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: productoOptionsMap['Participación en procesos de formación de profesores'],
-    },
-    {
-      actividad: 'Programación y gestión de prácticas extramuros',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: productoOptionsMap['Programación y gestión de prácticas extramuros'],
-    },
-    {
-      actividad: 'Elaboración de exámenes para validaciones',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: productoOptionsMap['Elaboración de exámenes para validaciones'],
-    },
-    {
-      actividad: 'Líder de CTeI, extensión y proyección social',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: productoOptionsMap['Líder de CTeI, extensión y proyección social'],
-    },
-    {
-      actividad: 'Líder de resultados de aprendizaje',
-      horasSemanales: 0,
-      horasSemestrales: 0,
-      descripcionActividad: '',
-      producto: productoOptionsMap['Líder de resultados de aprendizaje'],
-    },
-  ];
-};
-const [gestion, setGAcademica] = useState(generateInitialActividades());
+  const [gestion, setGAcademica] = useState(generateInitialActividades());
 
-const vaciarActividades = () => {
-  setGAcademica(generateInitialActividades());
-};
+  const vaciarActividades = () => {
+    setGAcademica(generateInitialActividades());
+  };
 
-useImperativeHandle(ref, () => ({
-  vaciarActividades,
-}));
-//Funcion para gestionar las actualizaciones de los datos
+  useImperativeHandle(ref, () => ({
+    vaciarActividades,
+  }));
+
   const handleGAcademicaChange = (index, field, value) => {
-    const nuevasExtension = [...gestion];
-    nuevasGAcademica[index][field] = field.includes('horas') ? Number(value) : value;
+    const nuevasGAcademica = [...gestion];
+    
+    if (field === 'horasSemanales') {
+      // Validar las restricciones de horas para cada actividad
+      const actividad = nuevasGAcademica[index].actividad;
+
+      // Restricciones específicas de actividades de gestión académica
+      if (actividad === 'Participación como jurado y/o asesor académico en trabajos de grado' && Number(value) > 2) {
+        Swal.fire({
+          title: 'Error',
+          text: 'No puedes asignar más de 2 horas semanales a trabajos de grado.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Participación en procesos de registros calificados' && Number(value) > 1) {
+        Swal.fire({
+          title: 'Error',
+          text: 'No puedes asignar más de 1 hora semanal para registros calificados.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Participación en procesos de acreditación' && Number(value) > 1) {
+        Swal.fire({
+          title: 'Error',
+          text: 'No puedes asignar más de 1 hora semanal para acreditación.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Participación en Consejos y Comités' && Number(value) > 1) {
+        Swal.fire({
+          title: 'Error',
+          text: 'No puedes asignar más de 1 hora semanal para Consejos y Comités.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Líder de CTeI, extensión y proyección social' && Number(value) > 3) {
+        Swal.fire({
+          title: 'Error',
+          text: 'La actividad de Líder de CTeI no puede superar 3 horas semanales.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Líder de resultados de aprendizaje' && Number(value) > 3) {
+        Swal.fire({
+          title: 'Error',
+          text: 'La actividad de Líder de resultados de aprendizaje no puede superar 3 horas semanales.',
+          icon: 'error',
+        });
+        return;
+      }
+
+      nuevasGAcademica[index].horasSemanales = Number(value);
+      nuevasGAcademica[index].horasSemestrales = Number(value) * 16;
+    } else {
+      nuevasGAcademica[index][field] = value;
+    }
+
     setGAcademica(nuevasGAcademica);
   };
-//Formula para mostrar el total de horas
+
   const totalHorasSemanales = gestion.reduce((acc, curr) => acc + curr.horasSemanales, 0);
   const totalHorasSemestrales = gestion.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
 
   return (
     <div className="overflow-x-auto">
-      <h5 className="text-xl font-bold mb-2">Gestion Academica</h5>
+      <h5 className="text-xl font-bold mb-2">Gestión Académica</h5>
       <table className="w-full border-collapse border border-gray-300 mb-4">
         <thead>
           <tr className="header-row">
-            <th colSpan="5" className="text-center p-2">Gestion Academica</th>
+            <th colSpan="5" className="text-center p-2">Gestión Académica</th>
           </tr>
           <tr className="bg-blue-200">
             <th className="border border-gray-300 p-4 header-cell">Actividad</th>
@@ -182,9 +241,7 @@ useImperativeHandle(ref, () => ({
                   type="number"
                   min="0"
                   value={item.horasSemanales}
-                  onChange={(e) =>
-                    handleGAcademicaChange(index, 'horasSemanales', e.target.value)
-                  }
+                  onChange={(e) => handleGAcademicaChange(index, 'horasSemanales', e.target.value)}
                   className="w-full p-1 border border-gray-300 rounded"
                 />
               </td>
@@ -193,18 +250,14 @@ useImperativeHandle(ref, () => ({
                   type="number"
                   min="0"
                   value={item.horasSemestrales}
-                  onChange={(e) =>
-                    handleGAcademicaChange(index, 'horasSemestrales', e.target.value)
-                  }
+                  readOnly
                   className="w-full p-1 border border-gray-300 rounded"
                 />
               </td>
               <td className="border border-gray-300 p-2">
                 <textarea
                   value={item.descripcionActividad}
-                  onChange={(e) =>
-                    handleGAcademicaChange(index, 'descripcionActividad', e.target.value)
-                  }
+                  onChange={(e) => handleGAcademicaChange(index, 'descripcionActividad', e.target.value)}
                   className="w-full p-1 border border-gray-300 rounded"
                 />
               </td>

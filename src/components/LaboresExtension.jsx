@@ -1,4 +1,5 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import Swal from 'sweetalert2'; // Importamos SweetAlert para alertas
 import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
 import '../index.css';
 
@@ -103,8 +104,66 @@ export const LaboresExtension = forwardRef((props, ref) => {
 
   const handleExtensionChange = (index, field, value) => {
     const nuevasExtension = [...extension];
-    nuevasExtension[index][field] =
-      field.includes('horas') ? Number(value) : value;
+    
+    if (field === 'horasSemanales') {
+      // Validar las restricciones de horas semanales para cada actividad
+      const actividad = nuevasExtension[index].actividad;
+
+      if (actividad === 'Gestión de proyectos de consultoría' && Number(value) > 5) {
+        Swal.fire({
+          title: 'Error',
+          text: 'La gestión de proyectos de consultoría no puede superar 5 horas semanales.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Acompañamiento al sector empresarial' && Number(value) > 4) {
+        Swal.fire({
+          title: 'Error',
+          text: 'El acompañamiento al sector empresarial no puede superar 4 horas semanales.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Participación en proyectos de intervención comunitaria' && Number(value) > 4) {
+        Swal.fire({
+          title: 'Error',
+          text: 'La participación en proyectos de intervención comunitaria no puede superar 4 horas semanales.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Gestión de proyectos culturales' && Number(value) > 3) {
+        Swal.fire({
+          title: 'Error',
+          text: 'La gestión de proyectos culturales no puede superar 3 horas semanales.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Promoción de la educación artística' && Number(value) > 2) {
+        Swal.fire({
+          title: 'Error',
+          text: 'La promoción de la educación artística no puede superar 2 horas semanales.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Divulgación de los valores culturales' && Number(value) > 2) {
+        Swal.fire({
+          title: 'Error',
+          text: 'La divulgación de los valores culturales no puede superar 2 horas semanales.',
+          icon: 'error',
+        });
+        return;
+      }
+
+      nuevasExtension[index].horasSemanales = Number(value);
+      nuevasExtension[index].horasSemestrales = Number(value) * 16;
+    } else {
+      nuevasExtension[index][field] = value;
+    }
+
     setExtension(nuevasExtension);
   };
 
@@ -136,9 +195,7 @@ export const LaboresExtension = forwardRef((props, ref) => {
                   type="number"
                   min="0"
                   value={item.horasSemanales}
-                  onChange={(e) =>
-                    handleExtensionChange(index, 'horasSemanales', e.target.value)
-                  }
+                  onChange={(e) => handleExtensionChange(index, 'horasSemanales', e.target.value)}
                   className="w-full p-1 border border-gray-300 rounded"
                 />
               </td>
@@ -147,18 +204,14 @@ export const LaboresExtension = forwardRef((props, ref) => {
                   type="number"
                   min="0"
                   value={item.horasSemestrales}
-                  onChange={(e) =>
-                    handleExtensionChange(index, 'horasSemestrales', e.target.value)
-                  }
+                  readOnly
                   className="w-full p-1 border border-gray-300 rounded"
                 />
               </td>
               <td className="border border-gray-300 p-2">
                 <textarea
                   value={item.descripcionActividad}
-                  onChange={(e) =>
-                    handleExtensionChange(index, 'descripcionActividad', e.target.value)
-                  }
+                  onChange={(e) => handleExtensionChange(index, 'descripcionActividad', e.target.value)}
                   className="w-full p-1 border border-gray-300 rounded"
                   rows="4"
                 ></textarea>
@@ -167,22 +220,20 @@ export const LaboresExtension = forwardRef((props, ref) => {
                 <CheckboxDropdown
                   options={productoOptionsMap[item.actividad] || []}
                   selectedOptions={item.producto}
-                  onChange={(selected) =>
-                    handleExtensionChange(index, 'producto', selected)
-                  }
+                  onChange={(selected) => handleExtensionChange(index, 'producto', selected)}
                 />
               </td>
             </tr>
           ))}
-          </tbody>
-           <tbody>
+        </tbody>
+        <tbody>
           <tr className="bg-gray-200 font-bold">
             <td className="border border-gray-300 p-2">Total</td>
             <td className="border border-gray-300 p-2 text-center">
-              {extension.reduce((acc, curr) => acc + Number(curr.horasSemanales), 0)}
+              {totalHorasSemanales}
             </td>
             <td className="border border-gray-300 p-2 text-center">
-              {extension.reduce((acc, curr) => acc + Number(curr.horasSemestrales), 0)}
+              {totalHorasSemestrales}
             </td>
             <td className="border border-gray-300 p-2" colSpan="2"></td>
           </tr>

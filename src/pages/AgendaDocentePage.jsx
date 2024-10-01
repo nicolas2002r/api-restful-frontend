@@ -11,17 +11,29 @@ import { LaboresDocencia } from '../components/LaboresDocencia';
 
 export const AgendaDocentePage = () => {
   const [value, setValue] = useState('1');
+
+  // Refs para cada uno de los componentes para que su estado no se pierda
   const laboresAcademicasRef = useRef(null);
   const laboresCientificasRef = useRef(null);
   const laboresExtensionRef = useRef(null);
   const gestionAcademicaRef = useRef(null);
   const laboresDocenciaRef = useRef(null);
 
+  // Estado para mantener los datos de cada pestaña
+  const actividadesRefs = useRef({
+    laboresAcademicas: null,
+    laboresCientificas: null,
+    laboresExtension: null,
+    gestionAcademica: null,
+    laboresDocencia: null
+  });
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   const handleVaciar = () => {
+    // Llamamos a las funciones vaciarActividades de cada componente si existen
     if (laboresAcademicasRef.current) {
       laboresAcademicasRef.current.vaciarActividades();
     }
@@ -39,17 +51,22 @@ export const AgendaDocentePage = () => {
     }
   };
 
-  const handleExportar = () => {
-    console.log("Exportar acción");
-  };
-
   const handleEnviarReporte = () => {
-    console.log("Enviar reporte acción");
-    Swal.fire({
-      title: "¡Envío exitoso!",
-      text: "El reporte se ha enviado exitosamente.",
-      icon: "success",
-    });
+    // Verificamos si hay actividades en LaboresDocencia
+    if (laboresDocenciaRef.current && laboresDocenciaRef.current.getEntriesCount() === 0) {
+      Swal.fire({
+        title: "Error",
+        text: "No puedes enviar el reporte sin al menos una materia registrada en Labores de Docencia.",
+        icon: "error",
+      });
+    } else {
+      console.log("Enviar reporte acción");
+      Swal.fire({
+        title: "¡Envío exitoso!",
+        text: "El reporte se ha enviado exitosamente.",
+        icon: "success",
+      });
+    }
   };
 
   return (
@@ -75,40 +92,39 @@ export const AgendaDocentePage = () => {
               <Tab label="Gestión Académica y Administrativa" value="5" />
             </TabList>
           </Box>
-          {/* Contenido de cada TabPanel */}
-          <TabPanel value="1" unmountOnExit={false}>
+          
+          {/* TabPanels ajustados */}
+          <TabPanel value="1">
             <div className="mt-3">
               <LaboresDocencia ref={laboresDocenciaRef}/>
             </div>
           </TabPanel>
-          <TabPanel value="2" unmountOnExit={false}>
+          <TabPanel value="2">
             <div className="mt-3">
               <LaboresAcademicas ref={laboresAcademicasRef}/>
             </div>
           </TabPanel>
-          <TabPanel value="3" unmountOnExit={false}>
+          <TabPanel value="3">
             <div className="mt-3">
               <LaboresCientificas ref={laboresCientificasRef}/>
             </div>
           </TabPanel>
-          <TabPanel value="4" unmountOnExit={false}>
+          <TabPanel value="4">
             <div className="mt-3">
               <LaboresExtension ref={laboresExtensionRef}/>
             </div>
           </TabPanel>
-          <TabPanel value="5" unmountOnExit={false}>
+          <TabPanel value="5">
             <div className="mt-3">
               <GestionAcademica ref={gestionAcademicaRef}/>
             </div>
           </TabPanel>
         </TabContext>
       </div>
+      
       <div className="button-container mt-4">
         <Button className="B-general" variant="outlined" onClick={handleVaciar} style={{ marginRight: '10px' }}>
           Vaciar
-        </Button>
-        <Button className="B-general" variant="outlined" onClick={handleExportar} style={{ marginRight: '10px' }}>
-          Exportar
         </Button>
         <Button className="B-general" variant="outlined" onClick={handleEnviarReporte}>
           Enviar Reporte

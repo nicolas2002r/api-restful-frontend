@@ -4,6 +4,7 @@ import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
 import '../index.css';
 
 export const LaboresCientificas = forwardRef((props, ref) => {
+//Productos relacionas con cada Actividad  
   const productoOptionsMap = {
     'Gestión de semilleros de investigación': [
       'INFORME DE GESTIÓN REALIZADA DURANTE EL PERIODO ACADÉMICO',
@@ -41,6 +42,7 @@ export const LaboresCientificas = forwardRef((props, ref) => {
   };
 
   const generateInitialActividades = () => {
+//Inicializa las actividades
     return [
       {
         actividad: 'Gestión de semilleros de investigación',
@@ -139,7 +141,7 @@ export const LaboresCientificas = forwardRef((props, ref) => {
 
     setCientificas(nuevasCientificas);
   };
-
+//Suma total de horas
   const totalHorasSemanalesCientificas = cientificas.reduce((acc, curr) => acc + curr.horasSemanales, 0);
   const totalHorasSemestralesCientificas = cientificas.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
 

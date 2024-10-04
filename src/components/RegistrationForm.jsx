@@ -1,22 +1,21 @@
 // RegistrationForm.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from 'reactstrap';
+import axios from 'axios'; // Importar Axios
 import '../index.css';
 
 const RegistrationForm = ({
   form,
   handleChange,
-  handleSubmit,
   editIndex,
   setEditIndex,
   handleDelete,
-  availablePrograms, // Recibir programas disponibles como prop
-  handleProgramChange, // Recibir manejador de programas como prop
+  availablePrograms,
+  handleProgramChange,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Manejar clics fuera del dropdown para cerrarlo
   const handleClickOutside = (e) => {
     if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
       setDropdownOpen(false);
@@ -30,27 +29,35 @@ const RegistrationForm = ({
     };
   }, []);
 
-  // Alternar el estado del dropdown
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
-  // Manejar la selección de programas
   const onProgramSelect = (program) => {
     if (form.Rol.includes("Docente")) {
-      // Para Docentes, manejar múltiples selecciones
       if (form.Programas.includes(program)) {
         handleProgramChange(form.Programas.filter(p => p !== program));
       } else {
         handleProgramChange([...form.Programas, program]);
       }
     } else {
-      // Para Director y Decano, una única selección
       handleProgramChange([program]);
-      setDropdownOpen(false); // Cerrar el dropdown después de la selección
+      setDropdownOpen(false);
     }
   };
 
+  // Función para manejar el envío del formulario
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:8080/api/usuarios', form);
+      console.log('Usuario registrado:', response.data);
+      // Puedes agregar lógica adicional aquí, como limpiar el formulario o mostrar un mensaje de éxito
+    } catch (error) {
+      console.error('Error al registrar usuario:', error);
+      // Manejar el error (por ejemplo, mostrar un mensaje de error)
+    }
+  };
   return (
     <form onSubmit={handleSubmit}>
       <div className="form-group-custom">

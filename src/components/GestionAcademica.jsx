@@ -1,9 +1,10 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
-import Swal from 'sweetalert2'; // Importamos SweetAlert para mostrar alertas
+import Swal from 'sweetalert2';
 import '../index.css';
 
 export const GestionAcademica = forwardRef((props, ref) => {
+//Productos relacionados con cada Actividad
   const productoOptionsMap = {
     'Participación como jurado y/o asesor académico en trabajos de grado': [
       'OFICIO DE RETROALIMENTACIÓN DE OPCIONES DE GRADO PARA PREGRADO Y POSGRADO - F0-GD-51 (POR TRABAJO DE GRADO ASIGNADO)',
@@ -54,7 +55,7 @@ export const GestionAcademica = forwardRef((props, ref) => {
       'INSTRUMENTOS PARA LA EVALUACIÓN DE LOS RESULTADOS DE APRENDIZAJE DEL PROGRAMA - RAP',
     ],
   };
-
+//Inicializa las Actividades
   const generateInitialActividades = () => {
     return [
       {
@@ -212,7 +213,7 @@ export const GestionAcademica = forwardRef((props, ref) => {
 
     setGAcademica(nuevasGAcademica);
   };
-
+//Suma total tanto de horas semanales como semestrales
   const totalHorasSemanales = gestion.reduce((acc, curr) => acc + curr.horasSemanales, 0);
   const totalHorasSemestrales = gestion.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
 

@@ -1,40 +1,54 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
-import { Table, Button, Modal, Form } from 'react-bootstrap';
-import Swal from 'sweetalert2';
-import '../index.css';
+import React, { useState, forwardRef, useImperativeHandle } from 'react'; 
+import { Table, Button, Modal, Form } from 'react-bootstrap'; 
+import Swal from 'sweetalert2'; 
+import '../index.css'; 
 
 export const LaboresDocencia = forwardRef((props, ref) => {
+  // Hook de estado para controlar la visibilidad del modal.
   const [showModal, setShowModal] = useState(false);
+
+  // Estado para manejar las entradas (registros) en la tabla.
   const [entries, setEntries] = useState([]);
+  
+  // Estado para saber cuál fila está seleccionada.
   const [selectedRowIndex, setSelectedRowIndex] = useState(null);
 
+  // Estado para manejar la información del formulario cuando se agrega una nueva entrada.
   const [newEntry, setNewEntry] = useState({
     asignatura: '',
     programa: '',
-    grupo: '',
+    grupo: '', 
     sede: '',
-    horasSemanales: '',
-    horasSemestre: ''
+    horasSemanales: '', 
+    horasSemestre: ''  
   });
 
+  // Función para cerrar el modal.
   const handleClose = () => setShowModal(false);
+
+  // Función para mostrar el modal.
   const handleShow = () => setShowModal(true);
 
+  // Función para manejar los cambios en los campos del formulario.
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
+    // Validación: si el campo es 'horasSemanales' y el valor es negativo, no lo actualiza.
     if (name === 'horasSemanales') {
       const numValue = parseFloat(value);
       if (numValue < 0) return;
     }
 
+    // Actualiza el estado del formulario con los nuevos valores.
     setNewEntry({ ...newEntry, [name]: value });
   };
 
+  // Función para agregar una nueva entrada (asignatura) a la tabla.
   const AgregarEntrada = (e) => {
     e.preventDefault();
     const horasSemestre = Math.round(newEntry.horasSemanales * 16);
 
+    // Actualiza el estado con la nueva entrada y reinicia el formulario.
     setEntries([...entries, { ...newEntry, horasSemestre }]);
     setNewEntry({
       asignatura: '',
@@ -47,36 +61,42 @@ export const LaboresDocencia = forwardRef((props, ref) => {
     handleClose();
   };
 
+  // Función para eliminar la entrada seleccionada en la tabla.
   const EliminarEntrada = () => {
-    if (selectedRowIndex !== null) {
+    if (selectedRowIndex !== null) { 
       const updatedEntries = [...entries];
       updatedEntries.splice(selectedRowIndex, 1);
-      setEntries(updatedEntries);
+      setEntries(updatedEntries); 
       setSelectedRowIndex(null);
     }
   };
 
+  // Función para calcular el total de horas (semanales o semestrales) de todas las entradas.
   const calcularTotalHoras = (tipo) => {
     return entries.reduce((total, entry) => {
       return total + (parseFloat(entry[tipo]) || 0);
     }, 0);
   };
 
+  // Calcula el total de horas semanales y del semestre de todas las entradas.
   const totalHorasSemanales = calcularTotalHoras('horasSemanales');
   const totalHorasSemestre = calcularTotalHoras('horasSemestre');
 
   useImperativeHandle(ref, () => ({
+    // Función para vaciar todas las actividades (limpiar las entradas).
     vaciarActividades() {
       setEntries([]);
       setSelectedRowIndex(null);
     },
+    // Función para obtener la cantidad de entradas actuales.
     getEntriesCount() {
       return entries.length;
     }
   }));
 
+  // Función para seleccionar una fila al hacer clic en ella.
   const handleRowClick = (index) => {
-    setSelectedRowIndex(index);
+    setSelectedRowIndex(index); 
   };
 
   return (

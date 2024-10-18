@@ -1,6 +1,7 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { Table, Button, Modal, Form } from 'react-bootstrap';
 import Swal from 'sweetalert2';
+import { CheckboxDropdown } from '../components/UI/CheckboxDropdown'; // Asegúrate de tener este componente disponible
 import '../index.css';
 
 export const LaboresDocencia = forwardRef((props, ref) => {
@@ -16,6 +17,21 @@ export const LaboresDocencia = forwardRef((props, ref) => {
     horasSemanales: '',
     horasSemestre: ''
   });
+
+  // Efecto para cargar datos de LocalStorage cuando se carga el componente
+  useEffect(() => {
+    const savedEntries = localStorage.getItem('laboresDocencia');
+    if (savedEntries) {
+      setEntries(JSON.parse(savedEntries));
+    }
+  }, []);
+
+  // Efecto para guardar datos en LocalStorage cada vez que entries cambie
+  useEffect(() => {
+    if (entries.length > 0) {
+      localStorage.setItem('laboresDocencia', JSON.stringify(entries));
+    }
+  }, [entries]);
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
@@ -35,7 +51,9 @@ export const LaboresDocencia = forwardRef((props, ref) => {
     e.preventDefault();
     const horasSemestre = Math.round(newEntry.horasSemanales * 16);
 
-    setEntries([...entries, { ...newEntry, horasSemestre }]);
+    const updatedEntries = [...entries, { ...newEntry, horasSemestre }];
+    setEntries(updatedEntries);
+
     setNewEntry({
       asignatura: '',
       programa: '',
@@ -65,13 +83,18 @@ export const LaboresDocencia = forwardRef((props, ref) => {
   const totalHorasSemanales = calcularTotalHoras('horasSemanales');
   const totalHorasSemestre = calcularTotalHoras('horasSemestre');
 
+  // Añadir método para obtener las entradas
   useImperativeHandle(ref, () => ({
     vaciarActividades() {
       setEntries([]);
+      localStorage.removeItem('laboresDocencia'); // Eliminar también del LocalStorage
       setSelectedRowIndex(null);
     },
     getEntriesCount() {
       return entries.length;
+    },
+    getEntries() {
+      return entries;
     }
   }));
 
@@ -132,63 +155,38 @@ export const LaboresDocencia = forwardRef((props, ref) => {
           <Form onSubmit={AgregarEntrada}>
             <Form.Group className="mb-3">
               <Form.Label>Programa</Form.Label>
-              <Form.Select
-                name="programa"
-                value={newEntry.programa}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Selecciona un programa</option>
-                <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
-                <option value="Ingeniería Electrónica">Ingeniería Electrónica</option>
-                <option value="Ingeniería Industrial">Ingeniería Industrial</option>
-              </Form.Select>
+              <CheckboxDropdown
+                options={['Ingeniería de Sistemas', 'Ingeniería Electrónica', 'Ingeniería Industrial']}
+                selectedOption={newEntry.programa}
+                onOptionChange={(value) => setNewEntry({ ...newEntry, programa: value })}
+              />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Nombre de la asignatura</Form.Label>
-              <Form.Select
-                name="asignatura"
-                value={newEntry.asignatura}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Selecciona una asignatura</option>
-                <option value="Matemáticas">Matemáticas</option>
-                <option value="Física">Física</option>
-                <option value="Programación">Programación</option>
-                <option value="Diseño de Software">Diseño de Software</option>
-              </Form.Select>
+              <CheckboxDropdown
+                options={['Matemáticas', 'Física', 'Programación', 'Diseño de Software']}
+                selectedOption={newEntry.asignatura}
+                onOptionChange={(value) => setNewEntry({ ...newEntry, asignatura: value })}
+              />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Grupo</Form.Label>
-              <Form.Select
-                name="grupo"
-                value={newEntry.grupo}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Selecciona un grupo</option>
-                <option value="Grupo A">Grupo A</option>
-                <option value="Grupo B">Grupo B</option>
-                <option value="Grupo C">Grupo C</option>
-              </Form.Select>
+              <CheckboxDropdown
+                options={['Grupo A', 'Grupo B', 'Grupo C']}
+                selectedOption={newEntry.grupo}
+                onOptionChange={(value) => setNewEntry({ ...newEntry, grupo: value })}
+              />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Sede</Form.Label>
-              <Form.Select
-                name="sede"
-                value={newEntry.sede}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Selecciona una sede</option>
-                <option value="Sede Principal">Sede Principal</option>
-                <option value="Sede Norte">Sede Norte</option>
-                <option value="Sede Sur">Sede Sur</option>
-              </Form.Select>
+              <CheckboxDropdown
+                options={['Sede Principal', 'Sede Norte', 'Sede Sur']}
+                selectedOption={newEntry.sede}
+                onOptionChange={(value) => setNewEntry({ ...newEntry, sede: value })}
+              />
             </Form.Group>
 
             <Form.Group className="mb-3">

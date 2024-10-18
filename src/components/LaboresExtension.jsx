@@ -1,5 +1,5 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
-import Swal from 'sweetalert2'; // Importamos SweetAlert para alertas
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import Swal from 'sweetalert2';
 import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
 import '../index.css';
 
@@ -45,6 +45,7 @@ export const LaboresExtension = forwardRef((props, ref) => {
     'Divulgación de los valores culturales': [],
   };
 
+  // Generar actividades iniciales
   const generateInitialActividades = () => {
     return [
       {
@@ -92,7 +93,18 @@ export const LaboresExtension = forwardRef((props, ref) => {
     ];
   };
 
-  const [extension, setExtension] = useState(generateInitialActividades());
+  // Cargar actividades desde localStorage o usar las iniciales
+  const loadExtensionFromStorage = () => {
+    const savedData = localStorage.getItem('extension');
+    return savedData ? JSON.parse(savedData) : generateInitialActividades();
+  };
+
+  const [extension, setExtension] = useState(loadExtensionFromStorage());
+
+  useEffect(() => {
+    // Guardar en localStorage cuando las actividades cambien
+    localStorage.setItem('extension', JSON.stringify(extension));
+  }, [extension]);
 
   const vaciarActividades = () => {
     setExtension(generateInitialActividades());
@@ -106,7 +118,6 @@ export const LaboresExtension = forwardRef((props, ref) => {
     const nuevasExtension = [...extension];
     
     if (field === 'horasSemanales') {
-      // Validar las restricciones de horas semanales para cada actividad
       const actividad = nuevasExtension[index].actividad;
 
       if (actividad === 'Gestión de proyectos de consultoría' && Number(value) > 5) {

@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
 import Swal from 'sweetalert2'; // Importamos SweetAlert para mostrar alertas
 import '../index.css';
@@ -53,6 +53,12 @@ export const GestionAcademica = forwardRef((props, ref) => {
       'INFORME DE LA EVALUACIÓN DE LOS RESULTADOS DE APRENDIZAJE DEL PROGRAMA - RAP',
       'INSTRUMENTOS PARA LA EVALUACIÓN DE LOS RESULTADOS DE APRENDIZAJE DEL PROGRAMA - RAP',
     ],
+  };
+
+  // Función para cargar desde localStorage
+  const loadFromLocalStorage = () => {
+    const savedData = localStorage.getItem('gestionAcademica');
+    return savedData ? JSON.parse(savedData) : generateInitialActividades();
   };
 
   const generateInitialActividades = () => {
@@ -137,7 +143,12 @@ export const GestionAcademica = forwardRef((props, ref) => {
     ];
   };
 
-  const [gestion, setGAcademica] = useState(generateInitialActividades());
+  const [gestion, setGAcademica] = useState(loadFromLocalStorage());
+
+  // Guardar en localStorage cada vez que el estado cambie
+  useEffect(() => {
+    localStorage.setItem('gestionAcademica', JSON.stringify(gestion));
+  }, [gestion]);
 
   const vaciarActividades = () => {
     setGAcademica(generateInitialActividades());
@@ -187,98 +198,72 @@ export const GestionAcademica = forwardRef((props, ref) => {
         });
         return;
       }
-      if (actividad === 'Líder de CTeI, extensión y proyección social' && Number(value) > 3) {
+      if (actividad === 'Programación y gestión de prácticas extramuros' && Number(value) > 4) {
         Swal.fire({
           title: 'Error',
-          text: 'La actividad de Líder de CTeI no puede superar 3 horas semanales.',
+          text: 'No puedes asignar más de 4 horas semanales para prácticas extramuros.',
           icon: 'error',
         });
         return;
       }
-      if (actividad === 'Líder de resultados de aprendizaje' && Number(value) > 3) {
-        Swal.fire({
-          title: 'Error',
-          text: 'La actividad de Líder de resultados de aprendizaje no puede superar 3 horas semanales.',
-          icon: 'error',
-        });
-        return;
-      }
-
-      nuevasGAcademica[index].horasSemanales = Number(value);
-      nuevasGAcademica[index].horasSemestrales = Number(value) * 16;
-    } else {
-      nuevasGAcademica[index][field] = value;
     }
 
+    nuevasGAcademica[index][field] = value;
     setGAcademica(nuevasGAcademica);
   };
 
-  const totalHorasSemanales = gestion.reduce((acc, curr) => acc + curr.horasSemanales, 0);
-  const totalHorasSemestrales = gestion.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
-
   return (
-    <div className="overflow-x-auto">
-      <h5 className="text-xl font-bold mb-2">Gestión Académica</h5>
-      <table className="w-full border-collapse border border-gray-300 mb-4">
+    <div>
+      <h3 className='titleStyle'>Gestión Académica</h3>
+      <table className='table table-bordered'>
         <thead>
-          <tr className="header-row">
-            <th colSpan="5" className="text-center p-2">Gestión Académica</th>
-          </tr>
-          <tr className="bg-blue-200">
-            <th className="border border-gray-300 p-4 header-cell">Actividad</th>
-            <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semanales)</th>
-            <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semestrales)</th>
-            <th className="border border-gray-300 p-4 header-cell">Descripción de la Actividad</th>
-            <th className="border border-gray-300 p-2 header-cell">Producto</th>
+          <tr>
+            <th>Actividad</th>
+            <th>Horas Semanales</th>
+            <th>Horas Semestrales</th>
+            <th>Descripción de la Actividad</th>
+            <th>Producto</th>
           </tr>
         </thead>
         <tbody>
-          {gestion.map((item, index) => (
+          {gestion.map((actividad, index) => (
             <tr key={index}>
-              <td className="border border-gray-300 p-2" style={{ width: '170px' }}>{item.actividad}</td>
-              <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
+              <td>{actividad.actividad}</td>
+              <td>
                 <input
-                  type="number"
-                  min="0"
-                  value={item.horasSemanales}
+                  type='number'
+                  className='form-control'
+                  value={actividad.horasSemanales}
                   onChange={(e) => handleGAcademicaChange(index, 'horasSemanales', e.target.value)}
-                  className="w-full p-1 border border-gray-300 rounded"
                 />
               </td>
-              <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
+              <td>
                 <input
-                  type="number"
-                  min="0"
-                  value={item.horasSemestrales}
-                  readOnly
-                  className="w-full p-1 border border-gray-300 rounded"
+                  type='number'
+                  className='form-control'
+                  value={actividad.horasSemestrales}
+                  onChange={(e) => handleGAcademicaChange(index, 'horasSemestrales', e.target.value)}
                 />
               </td>
-              <td className="border border-gray-300 p-2">
+              <td>
                 <textarea
-                  value={item.descripcionActividad}
+                  className='form-control'
+                  value={actividad.descripcionActividad}
                   onChange={(e) => handleGAcademicaChange(index, 'descripcionActividad', e.target.value)}
-                  className="w-full p-1 border border-gray-300 rounded"
                 />
               </td>
-              <td className="border border-gray-300 p-2">
+              <td>
                 <CheckboxDropdown
-                  options={item.producto}
-                  selectedOptions={item.producto}
-                  onChange={(selected) => handleGAcademicaChange(index, 'producto', selected)}
+                  options={productoOptionsMap[actividad.actividad]}
+                  selectedOptions={actividad.producto}
+                  onOptionChange={(selectedOptions) =>
+                    handleGAcademicaChange(index, 'producto', selectedOptions)
+                  }
                 />
               </td>
             </tr>
           ))}
         </tbody>
-        <tfoot>
-          <tr className="bg-gray-200">
-            <td className="border border-gray-300 p-2 text-right font-bold" colSpan="1">Total:</td>
-            <td className="border border-gray-300 p-2 text-center font-bold">{totalHorasSemanales}</td>
-            <td className="border border-gray-300 p-2 text-center font-bold">{totalHorasSemestrales}</td>
-            <td colSpan="2" className="border border-gray-300 p-2"></td>
-          </tr>
-        </tfoot>
       </table>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import Swal from 'sweetalert2';
 import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
 import '../index.css';
@@ -82,7 +82,18 @@ export const LaboresCientificas = forwardRef((props, ref) => {
     ];
   };
 
-  const [cientificas, setCientificas] = useState(generateInitialActividades());
+  // Cargar actividades guardadas en localStorage o generar iniciales
+  const loadCientificasFromStorage = () => {
+    const savedData = localStorage.getItem('cientificas');
+    return savedData ? JSON.parse(savedData) : generateInitialActividades();
+  };
+
+  const [cientificas, setCientificas] = useState(loadCientificasFromStorage());
+
+  useEffect(() => {
+    // Guardar actividades en localStorage cuando cientificas cambie
+    localStorage.setItem('cientificas', JSON.stringify(cientificas));
+  }, [cientificas]);
 
   const vaciarActividades = () => {
     setCientificas(generateInitialActividades());

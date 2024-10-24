@@ -19,40 +19,31 @@ export const AgendaDocentePage = () => {
   const gestionAcademicaRef = useRef(null);
   const laboresDocenciaRef = useRef(null);
 
-  // Estado para mantener los datos de cada pestaña
-  const actividadesRefs = useRef({
-    laboresAcademicas: null,
-    laboresCientificas: null,
-    laboresExtension: null,
-    gestionAcademica: null,
-    laboresDocencia: null
-  });
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   const handleVaciar = () => {
-    // Llamamos a las funciones vaciarActividades de cada componente si existen
-    if (laboresAcademicasRef.current) {
+    // Se llama a la función vaciarActividades de cada componente si están definidas
+    if (laboresAcademicasRef.current?.vaciarActividades) {
       laboresAcademicasRef.current.vaciarActividades();
     }
-    if (laboresCientificasRef.current) {
+    if (laboresCientificasRef.current?.vaciarActividades) {
       laboresCientificasRef.current.vaciarActividades();
     }
-    if (laboresExtensionRef.current) {
+    if (laboresExtensionRef.current?.vaciarActividades) {
       laboresExtensionRef.current.vaciarActividades();
     }
-    if (gestionAcademicaRef.current) {
+    if (gestionAcademicaRef.current?.vaciarActividades) {
       gestionAcademicaRef.current.vaciarActividades();
     }
-    if (laboresDocenciaRef.current) {
+    if (laboresDocenciaRef.current?.vaciarActividades) {
       laboresDocenciaRef.current.vaciarActividades();
     }
   };
 
   const handleEnviarReporte = () => {
-    // Verificamos si hay actividades en LaboresDocencia
+    // Se verifica que haya al menos una actividad en Labores de Docencia
     if (laboresDocenciaRef.current && laboresDocenciaRef.current.getEntriesCount() === 0) {
       Swal.fire({
         title: "Error",

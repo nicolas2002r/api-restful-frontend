@@ -1,52 +1,74 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react'; 
-import { Table, Button, Modal, Form } from 'react-bootstrap'; 
-import Swal from 'sweetalert2'; 
-import { CheckboxDropdown } from '../components/UI/CheckboxDropdown'; // Asegúrate de tener este componente disponible
-import '../index.css'; 
-
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import Swal from 'sweetalert2';
+import { Dropdown, Button, Table, Modal, Form } from 'react-bootstrap';
+import '../index.css';
+ 
 export const LaboresDocencia = forwardRef((props, ref) => {
-  // Hook de estado para controlar la visibilidad del modal.
   const [showModal, setShowModal] = useState(false);
-
-  // Estado para manejar las entradas (registros) en la tabla.
   const [entries, setEntries] = useState([]);
-  
-  // Estado para saber cuál fila está seleccionada.
   const [selectedRowIndex, setSelectedRowIndex] = useState(null);
 
-  // Estado para manejar la información del formulario cuando se agrega una nueva entrada.
   const [newEntry, setNewEntry] = useState({
     asignatura: '',
     programa: '',
-    grupo: '', 
+    grupo: '',
     sede: '',
-    horasSemanales: '', 
-    horasSemestre: ''  
+    horasSemanales: '',
+    horasSemestre: ''
   });
 
-  const handleClose = () => setShowModal(false);
+  useEffect(() => {
+    props.actualizarTotales();
+  }, [entries]); // Cada vez que cambien las entradas, actualiza los totales
+  
+  // Cargar las entradas desde localStorage al montar el componente
+  useEffect(() => {
+    const storedEntries = localStorage.getItem('laboresDocencia');
+    if (storedEntries) {
+      setEntries(JSON.parse(storedEntries));
+    }
+  }, []);
 
-  // Función para mostrar el modal.
+  // Guardar las entradas en localStorage cada vez que cambien
+  useEffect(() => {
+    if (entries.length > 0) {
+      localStorage.setItem('laboresDocencia', JSON.stringify(entries));
+    }
+  }, [entries]);
+
+  const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
-  // Función para manejar los cambios en los campos del formulario.
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    // Validación: si el campo es 'horasSemanales' y el valor es negativo, no lo actualiza.
     if (name === 'horasSemanales') {
       const numValue = parseFloat(value);
-      if (numValue < 0) return;
+      if (isNaN(numValue) || numValue < 0) return;
     }
 
-    // Actualiza el estado del formulario con los nuevos valores.
     setNewEntry({ ...newEntry, [name]: value });
   };
 
-  // Función para agregar una nueva entrada (asignatura) a la tabla.
+  const calcularTotalHoras = (tipo) => {
+    if (!entries || entries.length === 0) return 0;
+
+    return entries.reduce((total, entry) => {
+      const horas = parseFloat(entry[tipo]);
+      return total + (!isNaN(horas) ? horas : 0);
+    }, 0);
+  };
+
   const AgregarEntrada = (e) => {
     e.preventDefault();
-    const horasSemestre = Math.round(newEntry.horasSemanales * 16);
+
+    const horasSemanalesNum = parseFloat(newEntry.horasSemanales);
+    if (isNaN(horasSemanalesNum)) {
+      Swal.fire('Error', 'Por favor ingresa un valor válido para las horas semanales', 'error');
+      return;
+    }
+
+    const horasSemestre = Math.round(horasSemanalesNum * 16);
 
     const updatedEntries = [...entries, { ...newEntry, horasSemestre }];
     setEntries(updatedEntries);
@@ -62,36 +84,25 @@ export const LaboresDocencia = forwardRef((props, ref) => {
     handleClose();
   };
 
-  // Función para eliminar la entrada seleccionada en la tabla.
   const EliminarEntrada = () => {
-    if (selectedRowIndex !== null) { 
+    if (selectedRowIndex !== null) {
       const updatedEntries = [...entries];
       updatedEntries.splice(selectedRowIndex, 1);
-      setEntries(updatedEntries); 
+      setEntries(updatedEntries);
       setSelectedRowIndex(null);
+      localStorage.setItem('laboresDocencia', JSON.stringify(updatedEntries)); // Actualizar localStorage
     }
   };
 
-  // Función para calcular el total de horas (semanales o semestrales) de todas las entradas.
-  const calcularTotalHoras = (tipo) => {
-    return entries.reduce((total, entry) => {
-      return total + (parseFloat(entry[tipo]) || 0);
-    }, 0);
-  };
+  const totalHorasSemanalesDocencia = calcularTotalHoras('horasSemanales');
+  const totalHorasSemestreDocencia = calcularTotalHoras('horasSemestre');
 
-  // Calcula el total de horas semanales y del semestre de todas las entradas.
-  const totalHorasSemanales = calcularTotalHoras('horasSemanales');
-  const totalHorasSemestre = calcularTotalHoras('horasSemestre');
-
-  // Añadir método para obtener las entradas
   useImperativeHandle(ref, () => ({
-    // Función para vaciar todas las actividades (limpiar las entradas).
     vaciarActividades() {
       setEntries([]);
-      localStorage.removeItem('laboresDocencia'); // Eliminar también del LocalStorage
+      localStorage.removeItem('laboresDocencia');
       setSelectedRowIndex(null);
     },
-    // Función para obtener la cantidad de entradas actuales.
     getEntriesCount() {
       return entries.length;
     },
@@ -100,12 +111,13 @@ export const LaboresDocencia = forwardRef((props, ref) => {
     }
   }));
 
-  // Función para seleccionar una fila al hacer clic en ella.
   const handleRowClick = (index) => {
-    setSelectedRowIndex(index); 
+    setSelectedRowIndex(index);
   };
 
   return (
+
+
     <div className="p-4">
       <h5 className="text-xl font-bold mb-4">Orientación de Clases - Docencia</h5>
       <div className="mb-3">
@@ -144,8 +156,8 @@ export const LaboresDocencia = forwardRef((props, ref) => {
           ))}
           <tr>
             <td colSpan="4" className="text-center font-weight-bold">TOTAL</td>
-            <td>{totalHorasSemanales}</td>
-            <td>{totalHorasSemestre}</td>
+            <td>{totalHorasSemanalesDocencia}</td>
+            <td>{totalHorasSemestreDocencia}</td>
           </tr>
         </tbody>
       </Table>
@@ -158,38 +170,82 @@ export const LaboresDocencia = forwardRef((props, ref) => {
           <Form onSubmit={AgregarEntrada}>
             <Form.Group className="mb-3">
               <Form.Label>Programa</Form.Label>
-              <CheckboxDropdown
-                options={['Ingeniería de Sistemas', 'Ingeniería Electrónica', 'Ingeniería Industrial']}
-                selectedOption={newEntry.programa}
-                onOptionChange={(value) => setNewEntry({ ...newEntry, programa: value })}
-              />
+              <Dropdown>
+                <Dropdown.Toggle variant="light" id="dropdown-basic">
+                  {newEntry.programa || 'Seleccione un programa'}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  {['Ingeniería de Sistemas', 'Ingeniería Electrónica', 'Ingeniería Industrial'].map((option, index) => (
+                    <Dropdown.Item
+                      key={index}
+                      onClick={() => setNewEntry({ ...newEntry, programa: option })}
+                    >
+                      {option}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Nombre de la asignatura</Form.Label>
-              <CheckboxDropdown
-                options={['Matemáticas', 'Física', 'Programación', 'Diseño de Software']}
-                selectedOption={newEntry.asignatura}
-                onOptionChange={(value) => setNewEntry({ ...newEntry, asignatura: value })}
-              />
+              <Dropdown>
+                <Dropdown.Toggle variant="light" id="dropdown-basic">
+                  {newEntry.asignatura || 'Seleccione una asignatura'}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  {['Matemáticas', 'Física', 'Programación', 'Diseño de Software'].map((option, index) => (
+                    <Dropdown.Item
+                      key={index}
+                      onClick={() => setNewEntry({ ...newEntry, asignatura: option })}
+                    >
+                      {option}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Grupo</Form.Label>
-              <CheckboxDropdown
-                options={['Grupo A', 'Grupo B', 'Grupo C']}
-                selectedOption={newEntry.grupo}
-                onOptionChange={(value) => setNewEntry({ ...newEntry, grupo: value })}
-              />
+              <Dropdown>
+                <Dropdown.Toggle variant="light" id="dropdown-basic">
+                  {newEntry.grupo || 'Seleccione un grupo'}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  {['Grupo A', 'Grupo B', 'Grupo C'].map((option, index) => (
+                    <Dropdown.Item
+                      key={index}
+                      onClick={() => setNewEntry({ ...newEntry, grupo: option })}
+                    >
+                      {option}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Sede</Form.Label>
-              <CheckboxDropdown
-                options={['Sede Principal', 'Sede Norte', 'Sede Sur']}
-                selectedOption={newEntry.sede}
-                onOptionChange={(value) => setNewEntry({ ...newEntry, sede: value })}
-              />
+              <Dropdown>
+                <Dropdown.Toggle variant="light" id="dropdown-basic">
+                  {newEntry.sede || 'Seleccione una sede'}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  {['Sede Principal', 'Sede Norte', 'Sede Sur'].map((option, index) => (
+                    <Dropdown.Item
+                      key={index}
+                      onClick={() => setNewEntry({ ...newEntry, sede: option })}
+                    >
+                      {option}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
             </Form.Group>
 
             <Form.Group className="mb-3">

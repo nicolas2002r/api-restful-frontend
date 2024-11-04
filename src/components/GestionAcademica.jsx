@@ -4,7 +4,8 @@ import Swal from 'sweetalert2';
 import '../index.css';
 
 export const GestionAcademica = forwardRef((props, ref) => {
-//Productos relacionados con cada Actividad
+  const { onHorasSemanalesGAcademicasChange } = props;
+  //Productos relacionados con cada Actividad
   const productoOptionsMap = {
     'Participación como jurado y/o asesor académico en trabajos de grado': [
       'OFICIO DE RETROALIMENTACIÓN DE OPCIONES DE GRADO PARA PREGRADO Y POSGRADO - F0-GD-51 (POR TRABAJO DE GRADO ASIGNADO)',
@@ -161,7 +162,7 @@ export const GestionAcademica = forwardRef((props, ref) => {
 
   const handleGAcademicaChange = (index, field, value) => {
     const nuevasGAcademica = [...gestion];
-    
+
     if (field === 'horasSemanales') {
       // Validar las restricciones de horas para cada actividad
       const actividad = nuevasGAcademica[index].actividad;
@@ -207,33 +208,53 @@ export const GestionAcademica = forwardRef((props, ref) => {
         });
         return;
       }
-    }
+     // Actualizar las horas semanales
+     nuevasGAcademica[index].horasSemanales = Number(value);
 
-    nuevasGAcademica[index][field] = value;
-    setGAcademica(nuevasGAcademica);
-  };
-//Suma total tanto de horas semanales como semestrales
-  const totalHorasSemanales = gestion.reduce((acc, curr) => acc + curr.horasSemanales, 0);
-  const totalHorasSemestrales = gestion.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
-
+     // Actualizar las horas semestrales basadas en las horas semanales
+     nuevasGAcademica[index].horasSemestrales = Number(value) * 16;
+ 
+     // Notificar la actualización
+     setGAcademica(nuevasGAcademica);
+   } else if (field === 'descripcionActividad') {
+     nuevasGAcademica[index].descripcionActividad = value;
+     setGAcademica(nuevasGAcademica);
+   } else if (field === 'producto') {
+     nuevasGAcademica[index].producto = value;
+     setGAcademica(nuevasGAcademica);
+   }
+ };
+  //Suma total tanto de horas semanales como semestrales
+  const totalHorasSemanalesGAcademicas = gestion.reduce((acc, curr) => acc + curr.horasSemanales, 0);
+  const totalHorasSemestralesGAcademicas = gestion.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
+  
+  useEffect(() => {
+    // Cada vez que cambian las horas en Labores Académicas, avisa al padre
+    onHorasSemanalesGAcademicasChange(totalHorasSemanalesGAcademicas, totalHorasSemestralesGAcademicas);
+  }, [totalHorasSemanalesGAcademicas, totalHorasSemestralesGAcademicas]);
   return (
     <div>
-      <h3 className='titleStyle'>Gestión Académica</h3>
-      <table className='table table-bordered'>
+      <h5 className="text-xl font-bold mb-2">Gestión Académicas</h5>
+
+      {/* Gestion Académicas */}
+      <table className="w-full border-collapse border border-gray-300 mb-4">
         <thead>
-          <tr>
-            <th>Actividad</th>
-            <th>Horas Semanales</th>
-            <th>Horas Semestrales</th>
-            <th>Descripción de la Actividad</th>
-            <th>Producto</th>
+          <tr className="header-row">
+            <th colSpan="5" className="text-center p-2">Gestión Académicas</th>
+          </tr>
+          <tr className="bg-blue-200">
+            <th className="border border-gray-300 p-4 header-cell">Actividad</th>
+            <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semanales)</th>
+            <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semestrales)</th>
+            <th className="border border-gray-300 p-4 header-cell">Descripción de la Actividad</th>
+            <th className="border border-gray-300 p-2 header-cell">Producto</th>
           </tr>
         </thead>
         <tbody>
           {gestion.map((actividad, index) => (
             <tr key={index}>
-              <td>{actividad.actividad}</td>
-              <td>
+              <td className="border border-gray-300 p-2" style={{ width: '170px' }}>{actividad.actividad}</td>
+              <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
                 <input
                   type='number'
                   className='form-control'
@@ -241,32 +262,43 @@ export const GestionAcademica = forwardRef((props, ref) => {
                   onChange={(e) => handleGAcademicaChange(index, 'horasSemanales', e.target.value)}
                 />
               </td>
-              <td>
+              <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
                 <input
                   type='number'
                   className='form-control'
                   value={actividad.horasSemestrales}
+                  readOnly
                   onChange={(e) => handleGAcademicaChange(index, 'horasSemestrales', e.target.value)}
                 />
               </td>
-              <td>
+              <td className="border border-gray-300 p-2">
                 <textarea
                   className='form-control'
                   value={actividad.descripcionActividad}
                   onChange={(e) => handleGAcademicaChange(index, 'descripcionActividad', e.target.value)}
                 />
               </td>
-              <td>
+              <td className="border border-gray-300 p-2">
                 <CheckboxDropdown
                   options={productoOptionsMap[actividad.actividad]}
                   selectedOptions={actividad.producto}
-                  onOptionChange={(selectedOptions) =>
-                    handleGAcademicaChange(index, 'producto', selectedOptions)
-                  }
+                  onChange={(selected) => handleGAcademicaChange(index, 'producto', selected)}
                 />
               </td>
             </tr>
           ))}
+        </tbody>
+        <tbody>
+          <tr className="bg-gray-200 font-bold">
+            <td className="border border-gray-300 p-2">Total</td>
+            <td className="border border-gray-300 p-2 text-center">
+              {totalHorasSemanalesGAcademicas}
+            </td>
+            <td className="border border-gray-300 p-2 text-center">
+              {totalHorasSemestralesGAcademicas}
+            </td>
+            <td className="border border-gray-300 p-2" colSpan="2"></td>
+          </tr>
         </tbody>
       </table>
     </div>

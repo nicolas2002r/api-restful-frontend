@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { Table } from 'reactstrap';
 import RegistrationForm from "../components/RegistrationForm";
 import '../index.css';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
-// Componente principal para la página de registro de usuarios
 export const UserRegistrationPage = () => {
-  // Estado para almacenar los datos de los usuarios registrados
   const [data, setData] = useState([]);
+  const formRef = useRef(null);  // Referencia al formulario
+  const tableRef = useRef(null);  // Referencia a la tabla
 
-  // Estado inicial para el formulario de registro
   const initialFormState = {
     Nombres: "",
     Apellidos: "",
@@ -19,42 +20,50 @@ export const UserRegistrationPage = () => {
     TipoInvestigador: "",
   };
 
-  // Estado para el formulario, índice de edición y fila seleccionada
   const [form, setForm] = useState(initialFormState);
   const [editIndex, setEditIndex] = useState(null);
-  const [selectedRowIndex, setSelectedRowIndex] = useState(null); // Estado para la fila seleccionada
+  const [selectedRowIndex, setSelectedRowIndex] = useState(null);
 
-  // Referencias para el formulario y la tabla
-  const formRef = useRef(null);
-  const tableRef = useRef(null);
-  // Ejemplo de lista de programas disponibles
   const availablePrograms = [
     "Ingeniería de Sistemas",
     "Ingeniería Electrónica",
     "Ingeniería Ambiental",
-    "Ingeniería de Renovables"
+    "Ingeniería de Renovables",
+    "Ingeniería Industrial"
   ];
 
-  // Función para obtener datos desde la API
   const fetchData = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/usuarios');
-      if (!response.ok) {
-        throw new Error('Error en la solicitud');
+      const response = await axios.get('http://localhost:8080/api/usuarios');
+      if (!Array.isArray(response.data)) {
+        throw new Error('La respuesta no es un arreglo');
       }
-      const result = await response.json();
-      setData(result); // Suponiendo que la respuesta es un array de objetos
+
+      const formattedResult = response.data.map(user => ({
+        Nombres: user.nombre,
+        Apellidos: user.apellido,
+        Cedula: user.dni,
+        Correo: user.correo,
+        Rol: user.rol,
+        Programas: Array.isArray(user.programas) ? user.programas : [],
+        TipoInvestigador: user.TipoInvestigador || "N/A"
+      }));
+
+      setData(formattedResult);
     } catch (error) {
       console.error('Error al obtener los datos:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al obtener los datos de los usuarios.',
+      });
     }
   };
 
-  // Efecto para cargar datos al montar el componente
   useEffect(() => {
-    fetchData(); // Llama a la función para obtener los datos
+    fetchData();
   }, []);
 
-  // Maneja los cambios en los campos del formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({
@@ -63,40 +72,63 @@ export const UserRegistrationPage = () => {
     });
   };
 
-  // Maneja los cambios en la selección de programas
   const handleProgramChange = (selectedPrograms) => {
     setForm((prevForm) => ({
       ...prevForm,
-      Programas: selectedPrograms,
+      Programas: selectedPrograms || [],
     }));
   };
 
-  // Maneja el envío del formulario
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editIndex !== null) {
-      // Actualiza la entrada existente si se está editando
-      const updatedData = [...data];
-      updatedData[editIndex] = form;
-      setData(updatedData);
-      setEditIndex(null);
-    } else {
-      // Agrega una nueva entrada si no se está editando
-      setData([...data, form]);
+    const userData = {
+      ...form,
+      Programas: form.Programas || [],
+    };
+
+    try {
+      if (editIndex !== null) {
+        // Actualización de usuario
+        const updatedData = [...data];
+        updatedData[editIndex] = userData;
+        setData(updatedData);
+        setEditIndex(null);
+      } else {
+        // Agregar nuevo usuario al backend
+        const response = await axios.post('http://localhost:8080/api/usuarios', userData);
+
+        // Verificar que la respuesta contiene los datos del nuevo usuario
+        if (response && response.data) {
+          // Actualizar el estado `data` con el nuevo usuario
+          setData([...data, {
+            Nombres: response.data.nombre,
+            Apellidos: response.data.apellido,
+            Cedula: response.data.dni,
+            Correo: response.data.correo,
+            Rol: response.data.rol,
+            Programas: Array.isArray(response.data.programas) ? response.data.programas : [],
+            TipoInvestigador: response.data.TipoInvestigador || "N/A"
+          }]);
+        }
+      }
+    } catch (error) {
+      console.error('Error al guardar el usuario:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al guardar el usuario.',
+      });
     }
 
-    // Restablece el formulario al estado inicial
     setForm(initialFormState);
   };
 
-  // Maneja la edición de un usuario seleccionado
   const handleEdit = (index) => {
     setForm(data[index]);
     setEditIndex(index);
-    setSelectedRowIndex(index); // Establece la fila seleccionada al editar
+    setSelectedRowIndex(index);
   };
 
-  // Maneja el clic fuera del formulario y la tabla para cancelar la edición
   const handleClickOutside = (e) => {
     if (
       formRef.current &&
@@ -106,11 +138,10 @@ export const UserRegistrationPage = () => {
     ) {
       setEditIndex(null);
       setForm(initialFormState);
-      setSelectedRowIndex(null); // Resetea el índice seleccionado
+      setSelectedRowIndex(null);
     }
   };
 
-  // Agrega y limpia el evento de clic fuera al montar y desmontar el componente
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
     return () => {
@@ -118,7 +149,6 @@ export const UserRegistrationPage = () => {
     };
   }, []);
 
-  // Renderiza el componente
   return (
     <>
       <div className="line-wrapper">
@@ -141,9 +171,9 @@ export const UserRegistrationPage = () => {
           <Table>
             <thead>
               <tr>
-                <th>Nombres</th>
-                <th>Apellidos</th>
-                <th>Cédula</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>DNI</th>
                 <th>Correo</th>
                 <th>Rol</th>
                 <th>Programas</th>
@@ -165,7 +195,15 @@ export const UserRegistrationPage = () => {
                   <td>{item.Cedula}</td>
                   <td>{item.Correo}</td>
                   <td>{item.Rol}</td>
-                  <td>{item.Programas.join(", ")}</td>
+                  <td>
+                    <ul>
+                      {Array.isArray(item.Programas) && item.Programas.length > 0
+                        ? item.Programas.map((programa, idx) => (
+                          <li key={idx}>{programa}</li>
+                        ))
+                        : <li>Ninguno</li>}
+                    </ul>
+                  </td>
                   <td>{item.TipoInvestigador || "N/A"}</td>
                 </tr>
               ))}

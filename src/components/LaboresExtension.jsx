@@ -1,9 +1,10 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import Swal from 'sweetalert2';
-import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
+import { CheckboxDropdown } from "../components/UI/CheckboxDropdown";
 import '../index.css';
 
 export const LaboresExtension = forwardRef((props, ref) => {
+  const { onHorasSemanalesExtensionChange } = props;
   const productoOptionsMap = {
     'Gestión de proyectos de consultoría': [
       'PROYECTOS EN EJECUCIÓN: INFORMES PARCIALES',
@@ -115,9 +116,11 @@ export const LaboresExtension = forwardRef((props, ref) => {
   }));
 
   const handleExtensionChange = (index, field, value) => {
-    const nuevasExtension = [...extension];
-    
-    if (field === 'horasSemanales') {
+    const nuevasExtension = [...extension]; // Crea una copia del estado actual
+
+    if (field === 'producto') {
+      nuevasExtension[index].producto = [...value]; // Asegúrate de copiar el array de productos
+    } else if (field === 'horasSemanales') {
       const actividad = nuevasExtension[index].actividad;
 
       if (actividad === 'Gestión de proyectos de consultoría' && Number(value) > 5) {
@@ -172,15 +175,19 @@ export const LaboresExtension = forwardRef((props, ref) => {
       nuevasExtension[index].horasSemanales = Number(value);
       nuevasExtension[index].horasSemestrales = Number(value) * 16;
     } else {
-      nuevasExtension[index][field] = value;
+      nuevasExtension[index][field] = value; // Actualiza cualquier otro campo
     }
 
-    setExtension(nuevasExtension);
+    setExtension(nuevasExtension); // Actualiza el estado con el array copiado
   };
 
-  const totalHorasSemanales = extension.reduce((acc, curr) => acc + curr.horasSemanales, 0);
-  const totalHorasSemestrales = extension.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
-
+  const totalHorasSemanalesExtension = extension.reduce((acc, curr) => acc + curr.horasSemanales, 0);
+  const totalHorasSemestralesExtension = extension.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
+  
+  useEffect(() => {
+    // Cada vez que cambian las horas en Labores Académicas, avisa al padre
+    onHorasSemanalesExtensionChange(totalHorasSemanalesExtension, totalHorasSemestralesExtension);
+  }, [totalHorasSemanalesExtension, totalHorasSemestralesExtension]);
   return (
     <div className="overflow-x-auto">
       <h5 className="text-xl font-bold mb-2">Labores de Extensión</h5>
@@ -241,10 +248,10 @@ export const LaboresExtension = forwardRef((props, ref) => {
           <tr className="bg-gray-200 font-bold">
             <td className="border border-gray-300 p-2">Total</td>
             <td className="border border-gray-300 p-2 text-center">
-              {totalHorasSemanales}
+              {totalHorasSemanalesExtension}
             </td>
             <td className="border border-gray-300 p-2 text-center">
-              {totalHorasSemestrales}
+              {totalHorasSemestralesExtension}
             </td>
             <td className="border border-gray-300 p-2" colSpan="2"></td>
           </tr>

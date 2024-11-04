@@ -72,7 +72,7 @@ code {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: left;
   margin-top: 50px;
-  height: 610px; /* Altura fija para el contenedor */
+  height: 620px; /* Altura fija para el contenedor */
   overflow-y: 550px; /* Barra de desplazamiento vertical */
   position: relative; /* Mantiene la posición relativa */
 }
@@ -309,7 +309,11 @@ input:focus {
   display: flex;
   flex-direction: row; /* Cambia a fila para alinear botones horizontalmente */
   justify-content: center; /* Centra los botones horizontalmente */
+  align-items: center;
   margin-top: 20px; /* Espacio superior para separar de otros elementos */
+}
+.horas-container{
+  flex-grow: 1;
 }
 
 button.B-general {
@@ -329,4 +333,49 @@ button.B-general:hover {
 .selected-row {
   box-shadow: 0 4px 8px #00A651; /* Sombra */
   cursor: pointer; /* Cambia el cursor a pointer */
+}
+
+/*///Vector HomeDocente///*/
+.home-docente-content {
+  display: flex;
+  flex-direction: column; /* Alinea los elementos de forma vertical */
+}
+.content-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Alinea el contenido al inicio */
+  margin-top: 10px; /* Espacio entre el título y el contenido */
+}
+
+.text-content {
+  flex: 1; /* El texto ocupa el espacio necesario */
+  margin-right: auto; /* Espaciado entre el texto y la imagen */
+  max-height: 500px; /* Ajusta esta altura según sea necesario */
+  padding: 10px; /* Agrega espacio interno para mejor visualización */
+}
+
+.image-content {
+  flex-shrink: 0; /* Evita que la imagen se reduzca más allá de su tamaño */
+  margin-bottom: 10px;
+}
+
+.docente-vector {
+  width: 400px; /* Ajusta el tamaño de la imagen */
+  height: auto; /* Mantiene las proporciones de la imagen */
+}
+.docente-vector-lista {
+  width: 500px; /* Ajusta el tamaño de la imagen */
+  height: auto; /* Mantiene las proporciones de la imagen */
+}
+.overflow-container {
+  max-height: 500px; /* Ajusta esta altura según sea necesario */
+  overflow-y: auto; /* Agrega barra de desplazamiento vertical si es necesario */
+  padding: 10px; /* Agrega espacio interno para mejor visualización */
+  background-color: white; /* Color de fondo blanco */
+}
+
+.text-content {
+  flex: 1; /* El texto ocupa el espacio necesario */
+  margin-right: auto; /* Espaciado entre el texto y la imagen */
+  padding: 10px; /* Agrega espacio interno para mejor visualización */
 }

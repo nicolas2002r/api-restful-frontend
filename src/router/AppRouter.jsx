@@ -8,14 +8,19 @@ import { NavbarProvider } from "../context/NavbarContext";
 import {RevisionDecanoPage} from "../pages/RevisionDecanoPage";
 import {MisAgendasPage} from "../pages/SubPages/MisAgendasPage";
 import {RevisionDirectorPage} from "../pages/RevisionDirectorPage";
-
+import {Prueba} from "../pages/prueba";
+import {HomeDocente} from "../pages/SubPages/HomeDocente";
 
 export const AppRouter = () => {
   return (
     <Routes>
+      {/*Rutas Publicas*/}
       <Route path="/" element={<Navigate to="/Authentication" />} />
       <Route path="/Authentication" element={<AutenticationPage />} />
 
+      <Route path= "/Pruebas" element={< Prueba />} />
+
+{/*Rutas de administrador*/}
       <Route path="/" element={<NavbarProvider><MainLayout title="REGISTRO DE USUARIO" links={[]} /></NavbarProvider>}>
         <Route path="/UserRegistration" element={
           <PrivateRoute>
@@ -24,18 +29,31 @@ export const AppRouter = () => {
         } />
       </Route>
 
+
+{/*Rutas Agenda docente*/}
       <Route path="/" element={<NavbarProvider><MainLayout links={[
-        { path: '/Home', name: 'Home' },
+        { path: '/HomeDocente', name: 'Home' },
         { path: '/AgendaDocente', name: 'Tablero de Agendamiento' },
         { path: '/MisAgendas', name: 'Mis Agendas' }
       ]} /></NavbarProvider>}>
+        <Route path="/HomeDocente" element={
+          <PrivateRoute>
+            <HomeDocente />
+          </PrivateRoute>
+        } />
         <Route path="/AgendaDocente" element={
           <PrivateRoute>
             <AgendaDocentePage />
           </PrivateRoute>
         } />
+        <Route path="/MisAgendas" element={
+          <PrivateRoute>
+            <MisAgendasPage />
+          </PrivateRoute>
+        } />
       </Route>
 
+{/*Rutas Decano*/}
       <Route path="/" element={<NavbarProvider><MainLayout links={[
         { path: '/Home', name: 'Home' },
         { path: '/RevisionDecano', name: 'Revision de Agendas' },
@@ -43,18 +61,6 @@ export const AppRouter = () => {
         <Route path="/RevisionDecano" element={
           <PrivateRoute>
             <RevisionDecanoPage />
-          </PrivateRoute>
-        } />
-      </Route>
-
-      <Route path="/" element={<NavbarProvider><MainLayout links={[
-        { path: '/Home', name: 'Home' },
-        { path: '/AgendaDocente', name: 'Tablero de Agendamiento' },
-        { path: '/MisAgendas', name: 'Mis Agendas' }
-      ]} /></NavbarProvider>}>
-        <Route path="/MisAgendas" element={
-          <PrivateRoute>
-            <MisAgendasPage />
           </PrivateRoute>
         } />
       </Route>
@@ -69,6 +75,7 @@ export const AppRouter = () => {
           </PrivateRoute>
         } />
       </Route>
+
     </Routes>
   );
 };

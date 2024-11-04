@@ -1,9 +1,11 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import Swal from 'sweetalert2';
-import { CheckboxDropdown } from '../components/UI/CheckboxDropdown';
 import '../index.css';
+import {CheckboxDropdown} from "../components/UI/CheckboxDropdown";
+
 
 export const LaboresCientificas = forwardRef((props, ref) => {
+  const { onHorasSemanalesCientificasChange } = props;
 //Productos relacionas con cada Actividad  
   const productoOptionsMap = {
     'Gestión de semilleros de investigación': [
@@ -156,6 +158,10 @@ export const LaboresCientificas = forwardRef((props, ref) => {
   const totalHorasSemanalesCientificas = cientificas.reduce((acc, curr) => acc + curr.horasSemanales, 0);
   const totalHorasSemestralesCientificas = cientificas.reduce((acc, curr) => acc + curr.horasSemestrales, 0);
 
+  useEffect(() => {
+   // Cada vez que cambian las horas en Labores Cientificas, avisa al padre
+   onHorasSemanalesCientificasChange(totalHorasSemanalesCientificas, totalHorasSemestralesCientificas);
+ }, [totalHorasSemanalesCientificas, totalHorasSemestralesCientificas]);
   return (
     <div className="overflow-x-auto">
       <h5 className="text-xl font-bold mb-2">Labores Científicas</h5>
@@ -190,8 +196,10 @@ export const LaboresCientificas = forwardRef((props, ref) => {
                   type="number"
                   min="0"
                   value={item.horasSemestrales}
+                  readOnly
                   onChange={(e) => handleCientificasChange(index, 'horasSemestrales', e.target.value)}
                   className="w-full p-1 border border-gray-300 rounded"
+                  disabled
                 />
               </td>
               <td className="border border-gray-300 p-2">

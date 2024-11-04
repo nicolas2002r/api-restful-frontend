@@ -1,7 +1,8 @@
 // RegistrationForm.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from 'reactstrap';
-import axios from 'axios'; // Importar Axios
+import axios from 'axios';
+import Swal from 'sweetalert2';
 import '../index.css';
 
 const RegistrationForm = ({
@@ -49,15 +50,34 @@ const RegistrationForm = ({
   // Función para manejar el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Mapear los campos del front-end a los que espera el back-end
+    const payload = {
+      nombre: form.Nombres,             // Nombres -> nombre
+      apellido: form.Apellidos,         // Apellidos -> apellido
+      dni: form.Cedula,                 // Cedula -> dni
+      correo: form.Correo,              // Correo -> correo
+      rol: {
+        nombre: form.Rol                // Rol -> rol.nombre
+      },
+      programasAcademicos: form.Programas.map((program) => ({
+        nombre: program                 // Programas -> programasAcademicos con nombre
+      })),
+    };
+  
     try {
-      const response = await axios.post('http://localhost:8080/api/usuarios', form);
+      const response = await axios.post('http://localhost:8080/api/usuarios', payload);
       console.log('Usuario registrado:', response.data);
-      // Puedes agregar lógica adicional aquí, como limpiar el formulario o mostrar un mensaje de éxito
+      // Opcional: limpiar el formulario o mostrar un mensaje de éxito aquí
     } catch (error) {
-      console.error('Error al registrar usuario:', error);
-      // Manejar el error (por ejemplo, mostrar un mensaje de error)
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al registrar la información',
+      });
     }
   };
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="form-group-custom">
@@ -131,9 +151,8 @@ const RegistrationForm = ({
             required
             className="form-control"
           >
-            <option value="Docente de Planta">Docente de Planta</option>
-            <option value="Docente de Medio Tiempo">Docente de Medio Tiempo</option>
-            <option value="Director">Director</option>
+            <option value="Docente">Docente</option>
+            <option value="Director de Programa">Director de Programa</option>
             <option value="Decano">Decano</option>
           </select>
         </div>
@@ -201,27 +220,7 @@ const RegistrationForm = ({
           )}
         </div>
       </div>
-      {form.Rol === "Docente de Planta" || form.Rol === "Docente de Medio Tiempo" ? (
-        <div className="form-group-custom">
-          <label htmlFor="TipoInvestigador">Nivel de Investigador</label>
-          <div className="input-group-custom">
-            <i className="fas fa-flask input-icon"></i>
-            <select
-              name="TipoInvestigador"
-              value={form.TipoInvestigador || ""}
-              onChange={handleChange}
-              required
-              className="form-control"
-            >
-              <option value="">Selecciona una opción</option>
-              <option value="Investigador Asociado">Investigador Asociado</option>
-              <option value="Investigador Junior">Investigador Junior</option>
-              <option value="Sin Categoría">Sin Categoría</option>
-              <option value="Coinvestigador">Coinvestigador</option>
-            </select>
-          </div>
-        </div>
-      ) : null}
+
       <div className="button-container">
         <Button color="success" type="submit" className="me-3">
           {editIndex !== null ? "Guardar cambios" : "Registrar"}

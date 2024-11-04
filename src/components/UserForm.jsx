@@ -43,7 +43,7 @@ export const Userform = () => {
     else if (idNumber === '5678' && password === '5678') {
       console.log("Autenticado como Docente");
       login();
-      navigate("/AgendaDocente");
+      navigate("/HomeDocente");
     }
     // Autenticación para el rol Director de programa
     else if (idNumber === '9876' && password === '9876') {

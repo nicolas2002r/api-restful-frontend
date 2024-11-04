@@ -1,83 +1,10 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect, useRef } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import '../index.css';
 import { CheckboxDropdown } from "../components/UI/CheckboxDropdown";
 
-// Definición del componente CheckboxDropdown
-const CheckboxDropdown = ({ options, selectedOptions, onChange }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  const toggleOption = (option) => {
-    if (selectedOptions.includes(option)) {
-      onChange(selectedOptions.filter((o) => o !== option));
-    } else {
-      onChange([...selectedOptions, option]);
-    }
-  };
-
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setIsOpen(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  return (
-    <div className="relative inline-block text-left" ref={dropdownRef}>
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
-      >
-        Seleccionar
-        <svg
-          className="-mr-1 ml-2 h-5 w-5"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            fillRule="evenodd"
-            d="M5.23 7.21a.75.75 0 011.06.02L10 11.584l3.71-4.354a.75.75 0 111.14.976l-4.25 5a.75.75 0 01-1.14 0l-4.25-5a.75.75 0 01.02-1.06z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
-
-      {isOpen && (
-        <div className="origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-          <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-            {options.length > 0 ? (
-              options.map((option, idx) => (
-                <label key={idx} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  <input
-                    type="checkbox"
-                    checked={selectedOptions.includes(option)}
-                    onChange={() => toggleOption(option)}
-                    className="mr-2"
-                  />
-                  {option}
-                </label>
-              ))
-            ) : (
-              <div className="px-4 py-2 text-sm text-gray-500">No hay opciones disponibles</div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
 export const LaboresAcademicas = forwardRef((props, ref) => {
+  const { onHorasSemanalesChange } = props;
   const productoOptionsMap = {
     'Preparación de clases': [
       'SYLLABUS DE LA ASIGNATURA',
@@ -114,65 +41,66 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
     ],
   };
 
+  // Estado inicial para labores académicas y formativas
   const [academicas, setAcademicas] = useState(() => {
     const savedAcademicas = localStorage.getItem('laboresAcademicas');
-    return savedAcademicas
-      ? JSON.parse(savedAcademicas)
-      : [
-          {
-            actividad: 'Preparación de clases',
-            horasSemanales: 0,
-            horasSemestrales: 0,
-            descripcionActividad: '',
-            producto: [...productoOptionsMap['Preparación de clases']],
-          },
-          {
-            actividad: 'Evaluación de aprendizaje a estudiantes',
-            horasSemanales: 0,
-            horasSemestrales: 0,
-            descripcionActividad: '',
-            producto: [...productoOptionsMap['Evaluación de aprendizaje a estudiantes']],
-          },
-          {
-            actividad: 'Gestión de eventos académicos',
-            horasSemanales: 0,
-            horasSemestrales: 0,
-            descripcionActividad: '',
-            producto: [...productoOptionsMap['Gestión de eventos académicos']],
-          },
-        ];
+    return savedAcademicas ? JSON.parse(savedAcademicas) : generateInitialActividadesAcademicas();
   });
+  
+  const generateInitialActividadesAcademicas = () => [
+    {
+      actividad: 'Preparación de clases',
+      horasSemanales: 0,
+      horasSemestrales: 0,
+      descripcionActividad: '',
+      producto: [...productoOptionsMap['Preparación de clases']],
+    },
+    {
+      actividad: 'Evaluación de aprendizaje a estudiantes',
+      horasSemanales: 0,
+      horasSemestrales: 0,
+      descripcionActividad: '',
+      producto: [...productoOptionsMap['Evaluación de aprendizaje a estudiantes']],
+    },
+    {
+      actividad: 'Gestión de eventos académicos',
+      horasSemanales: 0,
+      horasSemestrales: 0,
+      descripcionActividad: '',
+      producto: [...productoOptionsMap['Gestión de eventos académicos']],
+    },
+  ];
 
   const [formativas, setFormativas] = useState(() => {
     const savedFormativas = localStorage.getItem('laboresFormativas');
-    return savedFormativas
-      ? JSON.parse(savedFormativas)
-      : [
-          {
-            actividad: 'Acompañamiento académico a estudiantes',
-            horasSemanales: 0,
-            horasSemestrales: 0,
-            descripcionActividad: '',
-            producto: [],
-          },
-          {
-            actividad: 'Cursos de fortalecimiento dirigido a estudiantes',
-            horasSemanales: 0,
-            horasSemestrales: 0,
-            descripcionActividad: '',
-            producto: [],
-          },
-          {
-            actividad: 'Asesoría en emprendimiento',
-            horasSemanales: 0,
-            horasSemestrales: 0,
-            descripcionActividad: '',
-            producto: [],
-          },
-        ];
+    return savedFormativas ? JSON.parse(savedFormativas) : generateInitialActividadesFormativas();
   });
+  
+  const generateInitialActividadesFormativas = () => [
+    {
+      actividad: 'Acompañamiento académico a estudiantes',
+      horasSemanales: 0,
+      horasSemestrales: 0,
+      descripcionActividad: '',
+      producto: [...productoOptionsMap['Acompañamiento académico a estudiantes']],
+    },
+    {
+      actividad: 'Cursos de fortalecimiento dirigido a estudiantes',
+      horasSemanales: 0,
+      horasSemestrales: 0,
+      descripcionActividad: '',
+      producto: [...productoOptionsMap['Cursos de fortalecimiento dirigido a estudiantes']],
+    },
+    {
+      actividad: 'Asesoría en emprendimiento',
+      horasSemanales: 0,
+      horasSemestrales: 0,
+      descripcionActividad: '',
+      producto: [...productoOptionsMap['Asesoría en emprendimiento']],
+    },
+  ];
 
-  // Guardar en LocalStorage cada vez que las actividades cambien
+  // Efectos para guardar en LocalStorage
   useEffect(() => {
     localStorage.setItem('laboresAcademicas', JSON.stringify(academicas));
   }, [academicas]);
@@ -181,34 +109,23 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
     localStorage.setItem('laboresFormativas', JSON.stringify(formativas));
   }, [formativas]);
 
-
+  // Función para vaciar ambas tablas
   const vaciarActividades = () => {
-    // Reiniciar actividades académicas y formativas
-    setAcademicas(
-      academicas.map((a) => ({
-        ...a,
-        horasSemanales: 0,
-        horasSemestrales: 0,
-      }))
-    );
-    setFormativas(
-      formativas.map((f) => ({
-        ...f,
-        horasSemanales: 0,
-        horasSemestrales: 0,
-      }))
-    );
+    setAcademicas(generateInitialActividadesAcademicas());
+    setFormativas(generateInitialActividadesFormativas());
   };
 
   useImperativeHandle(ref, () => ({
     vaciarActividades,
   }));
 
+  // Manejadores de cambios en las labores académicas
   const handleAcademicasChange = (index, field, value) => {
     const nuevasAcademicas = [...academicas];
-//Validaciones de horas
+
+    // Validación de horas para las actividades académicas
     if (field === 'horasSemanales') {
-      const horasDocencia = props.totalHorasDocencia; // Horas de docencia registradas
+      const horasDocencia = props.horasSemanales;
       const maxHoras = (horasDocencia * 0.2).toFixed(2); // 20% de horas para preparación o evaluación
 
       if (
@@ -246,8 +163,8 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
     setAcademicas(nuevasAcademicas);
   };
 
+  // Manejadores de cambios en las labores formativas
   const handleFormativasChange = (index, field, value) => {
-
     const nuevasFormativas = [...formativas];
 
     if (field === 'horasSemanales') {
@@ -287,6 +204,7 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
     setFormativas(nuevasFormativas);
   };
 
+  // Cálculo de horas totales
   const totalHorasSemanales = () => {
     const totalAcademicas = academicas.reduce((sum, item) => sum + item.horasSemanales, 0);
     const totalFormativas = formativas.reduce((sum, item) => sum + item.horasSemanales, 0);
@@ -298,158 +216,132 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
     const totalFormativas = formativas.reduce((sum, item) => sum + item.horasSemestrales, 0);
     return totalAcademicas + totalFormativas;
   };
-  useEffect(() => {
-    const fetchEntries = async () => {
-      try {
-        // Cambia la URL a tu API local
-        const response = await fetch('http://localhost:8080/actividad-controller/listarActividades');
-        
-        if (!response.ok) {
-          throw new Error('Error al obtener las entradas');
-        }
-        
-        const data = await response.json();
-        setEntries(data); // Asegúrate de que 'data' tenga el formato adecuado para las entradas
   
-      } catch (error) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Hubo un error al obtener los datos de las labores de docencia.',
-        });
-      }
-    };
-  
-    fetchEntries(); // Ejecuta la función para obtener los datos
-  }, []);
-return (
-  <div className="overflow-x-auto">
-    <h5 className="text-xl font-bold mb-2">Labores Académicas y Formativas</h5>
+ useEffect(() => {
+  // Cada vez que cambian las horas en Labores Académicas, avisa al padre
+  onHorasSemanalesChange(totalHorasSemanales, totalHorasSemestrales);
+}, [totalHorasSemanales, totalHorasSemestrales]);
 
-    {/* Labores Académicas */}
-    <table className="w-full border-collapse border border-gray-300 mb-4">
-      <thead>
-        <tr className="header-row">
-          <th colSpan="5" className="text-center p-2">
-              Labores Académicas
-            </th>
-        </tr>
-        <tr className="bg-blue-200">
-          <th className="border border-gray-300 p-4 header-cell">Actividad</th>
-          <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semanales)</th>
-          <th className="border border-gray-200 p-1 header-cell">Dedicación (Horas Semestrales)</th>
-          <th className="border border-gray-300 p-4 header-cell">Descripción de la Actividad</th>
-          <th className="border border-gray-300 p-2 header-cell">Producto</th>
-        </tr>
-      </thead>
-      <tbody>
-        {academicas.map((item, index) => (
-          <tr key={index}>
-            <td className="border border-gray-300 p-2" style={{ width: '170px' }}>
-                {item.actividad}
+  return (
+    <div className="overflow-x-auto">
+      <h5 className="text-xl font-bold mb-2">Labores Académicas y Formativas</h5>
+      {/* Labores Académicas */}
+      <table className="w-full border-collapse border border-gray-300 mb-4">
+        <thead>
+          <tr className="header-row">
+            <th colSpan="5" className="text-center p-2">Labores Académicas</th>
+          </tr>
+          <tr className="bg-blue-200">
+            <th className="border border-gray-300 p-4 header-cell">Actividad</th>
+            <th className="border border-gray-300 p-4 header-cell">Horas Semanales</th>
+            <th className="border border-gray-300 p-4 header-cell">Horas Semestrales</th>
+            <th className="border border-gray-300 p-4 header-cell">Descripción</th>
+            <th className="border border-gray-300 p-4 header-cell">Producto</th>
+          </tr>
+        </thead>
+        <tbody>
+          {academicas.map((actividad, index) => (
+            <tr key={index}>
+              <td className="border border-gray-300 p-2">{actividad.actividad}</td>
+              <td className="border border-gray-300 p-2">
+                <input
+                  type="number"
+                  value={actividad.horasSemanales}
+                  onChange={(e) => handleAcademicasChange(index, 'horasSemanales', e.target.value)}
+                  className="input-field"
+                />
               </td>
-            <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
-              <input
-                type="number"
-                min="0"
-                value={item.horasSemanales}
-                onChange={(e) => handleAcademicasChange(index, 'horasSemanales', e.target.value)}
-                className="w-full p-1 border border-gray-300 rounded"
-              />
-            </td>
-            <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
-              <input
-                type="number"
-                min="0"
-                value={item.horasSemestrales}
-                readOnly
-                className="w-full p-1 border border-gray-300 rounded"
-              />
-            </td>
-            <td className="border border-gray-300 p-2">
-              <textarea
-                value={item.descripcionActividad}
-                onChange={(e) => handleAcademicasChange(index, 'descripcionActividad', e.target.value)}
-                className="w-full p-1 border border-gray-300 rounded"
-                rows="4"
-              ></textarea>
-            </td>
-            <td className="border border-gray-300 p-2">
-            <CheckboxDropdown
-                options={productoOptionsMap[item.actividad] || []}
-                selectedOptions={item.producto}
-                onChange={(selected) => handleAcademicasChange(index, 'producto', selected)}
-              />
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+              <td className="border border-gray-300 p-2">
+                <input
+                  type="number"
+                  value={actividad.horasSemestrales}
+                  onChange={(e) => handleAcademicasChange(index, 'horasSemestrales', e.target.value)}
+                  className="w-full p-1 border border-gray-300 rounded"
+                  disabled
+                />
+              </td>
+              <td className="border border-gray-300 p-2">
+                <textarea
+                  value={actividad.descripcionActividad}
+                  onChange={(e) => handleAcademicasChange(index, 'descripcionActividad', e.target.value)}
+                  className="textarea-field"
+                />
+              </td>
+              <td className="border border-gray-300 p-2">
+                <CheckboxDropdown
+                  options={productoOptionsMap[actividad.actividad]}
+                  selectedOptions={actividad.producto}
+                  onChange={(selected) => handleAcademicasChange(index, 'producto', selected)}
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-    {/* Labores Formativas */}
-    <table className="w-full border-collapse border border-gray-300 mb-4">
-      <thead>
-        <tr className="header-row">
-          <th colSpan="5" className="text-center p-2">
-              Labores Formativas
-            </th>
-        </tr>
-        <tr className="bg-green-200">
-          <th className="border border-gray-300 p-4 header-cell">Actividad</th>
-          <th className="border border-gray-300 p-1 header-cell">Dedicación (Horas Semanales)</th>
-          <th className="border border-gray-300 p-1 header-cell">Dedicación (Horas Semestrales)</th>
-          <th className="border border-gray-300 p-4 header-cell">Descripción de la Actividad</th>
-          <th className="border border-gray-300 p-2 header-cell">Producto</th>
-        </tr>
-      </thead>
-      <tbody>
-        {formativas.map((item, index) => (
-          <tr key={index}>
-            <td className="border border-gray-300 p-2">{item.actividad}</td>
-            <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
-              <input
-                type="number"
-                min="0"
-                value={item.horasSemanales}
-                onChange={(e) => handleFormativasChange(index, 'horasSemanales', e.target.value)}
-                className="w-full p-1 border border-gray-300 rounded"
-              />
-            </td>
-            <td className="border border-gray-300 p-2 text-center" style={{ width: '10px' }}>
-              <input
-                type="number"
-                min="0"
-                value={item.horasSemestrales}
-                readOnly
-                className="w-full p-1 border border-gray-300 rounded"
-              />
-            </td>
-            <td className="border border-gray-300 p-2">
-              <textarea
-                value={item.descripcionActividad}
-                onChange={(e) => handleFormativasChange(index, 'descripcionActividad', e.target.value)}
-                className="w-full p-1 border border-gray-300 rounded"
-                rows="4"
-              ></textarea>
-            </td>
-            <td className="border border-gray-300 p-2">
-              <CheckboxDropdown
-                options={productoOptionsMap[item.actividad] || []}
-                selectedOptions={item.producto}
-                onChange={(selected) => handleFormativasChange(index, 'producto', selected)}
-              />
-            </td>
+      {/* Labores Formativas */}
+      <table className="w-full border-collapse border border-gray-300 mb-4">
+        <thead>
+          <tr className="header-row">
+            <th colSpan="5" className="text-center p-2">Labores Formativas</th>
           </tr>
-        ))}
-        {/* Fila de Totales para Labores Formativas */}
-        <tr className="bg-gray-300 font-bold">
-          <td className="border border-gray-300 p-2 text-right" colSpan="1">Total:</td>
-          <td className="border border-gray-300 p-2 text-center">{totalHorasSemanales()}</td>
-          <td className="border border-gray-300 p-2 text-center">{totalHorasSemestrales()}</td>
-          <td className="border border-gray-300 p-2" colSpan="2"></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-);
+          <tr className="bg-blue-200">
+            <th className="border border-gray-300 p-4 header-cell">Actividad</th>
+            <th className="border border-gray-300 p-4 header-cell">Horas Semanales</th>
+            <th className="border border-gray-300 p-4 header-cell">Horas Semestrales</th>
+            <th className="border border-gray-300 p-4 header-cell">Descripción</th>
+            <th className="border border-gray-300 p-4 header-cell">Producto</th>
+          </tr>
+        </thead>
+        <tbody>
+          {formativas.map((actividad, index) => (
+            <tr key={index}>
+              <td className="border border-gray-300 p-2">{actividad.actividad}</td>
+              <td className="border border-gray-300 p-2">
+                <input
+                  type="number"
+                  value={actividad.horasSemanales}
+                  onChange={(e) => handleFormativasChange(index, 'horasSemanales', e.target.value)}
+                  className="input-field"
+                />
+              </td>
+              <td className="border border-gray-300 p-2">
+                <input
+                  type="number"
+                  value={actividad.horasSemestrales}
+                  onChange={(e) => handleFormativasChange(index, 'horasSemestrales', e.target.value)}
+                  className="input-field"
+                  disabled
+                />
+              </td>
+              <td className="border border-gray-300 p-2">
+                <textarea
+                  value={actividad.descripcionActividad}
+                  onChange={(e) => handleFormativasChange(index, 'descripcionActividad', e.target.value)}
+                  className="textarea-field"
+                />
+              </td>
+              <td className="border border-gray-300 p-2">
+                <CheckboxDropdown
+                  options={productoOptionsMap[actividad.actividad]}
+                  selectedOptions={actividad.producto}
+                  onChange={(selected) => handleFormativasChange(index, 'producto', selected)}
+                />
+              </td>
+            </tr>
+          ))}
+          <tr className="bg-gray-200 font-bold">
+            <td className="border border-gray-300 p-2">Total</td>
+            <td className="border border-gray-300 p-2 text-center">
+              {totalHorasSemanales()}
+            </td>
+            <td className="border border-gray-300 p-2 text-center">
+              {totalHorasSemestrales()}
+            </td>
+            <td className="border border-gray-300 p-2" colSpan="2"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
 });

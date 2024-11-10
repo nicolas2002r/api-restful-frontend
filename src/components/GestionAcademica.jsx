@@ -168,42 +168,90 @@ export const GestionAcademica = forwardRef((props, ref) => {
       const actividad = nuevasGAcademica[index].actividad;
 
       // Restricciones específicas de actividades de gestión académica
-      if (actividad === 'Participación como jurado y/o asesor académico en trabajos de grado' && Number(value) > 2) {
+      if (actividad === 'Participación como jurado y/o asesor académico en trabajos de grado' && Number(value) > 1) {
         Swal.fire({
           title: 'Error',
-          text: 'No puedes asignar más de 2 horas semanales a trabajos de grado.',
+          text: 'No puedes asignar más de 1 horas semanal a trabajos de grado.',
           icon: 'error',
         });
         return;
       }
-      if (actividad === 'Participación en procesos de registros calificados' && Number(value) > 1) {
+      if (actividad === 'Participación en procesos de registros calificados' && Number(value) > 2) {
         Swal.fire({
           title: 'Error',
-          text: 'No puedes asignar más de 1 hora semanal para registros calificados.',
+          text: 'No puedes asignar más de 2 hora semanales para procesos de registro calificado.',
           icon: 'error',
         });
         return;
       }
-      if (actividad === 'Participación en procesos de acreditación' && Number(value) > 1) {
+      if (actividad === 'Participación en procesos de acreditación' && Number(value) > 8) {
         Swal.fire({
           title: 'Error',
-          text: 'No puedes asignar más de 1 hora semanal para acreditación.',
+          text: 'No puedes asignar más de 8 hora semanales para procesos de acreditación.',
           icon: 'error',
         });
         return;
       }
-      if (actividad === 'Participación en Consejos y Comités' && Number(value) > 1) {
+      if (actividad === 'Participación en Consejos y Comités' && Number(value) > 3) {
         Swal.fire({
           title: 'Error',
-          text: 'No puedes asignar más de 1 hora semanal para Consejos y Comités.',
+          text: 'No puedes asignar más de 3 hora semanales para participacion en Consejos y Comités.',
           icon: 'error',
         });
         return;
       }
-      if (actividad === 'Programación y gestión de prácticas extramuros' && Number(value) > 4) {
+      if (actividad === 'Participación en procesos de autoevaluación.' && Number(value) > 2) {
         Swal.fire({
           title: 'Error',
-          text: 'No puedes asignar más de 4 horas semanales para prácticas extramuros.',
+          text: 'No puedes asignar más de 2 hora semanales para participación en procesos de autoevaluación.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Participación en Investigaciones de mercado' && Number(value) > 2) {
+        Swal.fire({
+          title: 'Error',
+          text: 'No puedes asignar más de 2 hora semanales para participación en Investigaciones de mercado.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Participación en procesos de formación de profesores.' && Number(value) < 2) {
+        Swal.fire({
+          title: 'Error',
+          text: 'No puedes asignar menos de 2 hora semanales para participación en Investigaciones de mercado.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Programación y gestión de prácticas extramuros' && Number(value) > 1) {
+        Swal.fire({
+          title: 'Error',
+          text: 'No puedes asignar más de 1 horas semanal para programacion y gestion prácticas extramuros.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Elaboración de solicitudes para validaciones.' && Number(value) > 1) {
+        Swal.fire({
+          title: 'Error',
+          text: 'No puedes asignar más de 1 horas semanal para elaboración de solicitudes para validaciones.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Líder de CTeI, extensión y proyección social' && Number(value) > 2) {
+        Swal.fire({
+          title: 'Error',
+          text: 'No puedes asignar más de 2 hora semanales para funciones de Líder de CTeI, extensión y proyección social',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Líder de resultados de aprendizaje' && Number(value) > 3) {
+        Swal.fire({
+          title: 'Error',
+          text: 'No puedes asignar más de 3 hora semanales para funciones de Líder de resultados de aprendizaje.',
           icon: 'error',
         });
         return;
@@ -258,6 +306,7 @@ export const GestionAcademica = forwardRef((props, ref) => {
                 <input
                   type='number'
                   className='form-control'
+                  min = "0"
                   value={actividad.horasSemanales}
                   onChange={(e) => handleGAcademicaChange(index, 'horasSemanales', e.target.value)}
                 />

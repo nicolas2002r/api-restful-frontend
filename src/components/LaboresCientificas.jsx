@@ -113,26 +113,26 @@ export const LaboresCientificas = forwardRef((props, ref) => {
       const actividad = nuevasCientificas[index].actividad;
 
       // Restricciones específicas para cada actividad científica
-      if (actividad === 'Gestión de semilleros de investigación' && Number(value) > 3) {
+      if (actividad === 'Gestión de semilleros de investigación' && Number(value) > 2) {
         Swal.fire({
           title: 'Error',
-          text: 'La gestión de semilleros de investigación no puede superar 3 horas semanales.',
+          text: 'La gestión de semilleros de investigación no puede superar 2 horas semanales.',
           icon: 'error',
         });
         return;
       }
-      if (actividad === 'Elaboración de propuestas para convocatorias de CTeI' && Number(value) > 2) {
+      if (actividad === 'Elaboración de propuestas para convocatorias de CTeI' && Number(value) > 1) {
         Swal.fire({
           title: 'Error',
-          text: 'La elaboración de propuestas para convocatorias no puede superar 2 horas semanales.',
+          text: 'La elaboración de propuestas para convocatorias no puede superar 1 hora semanal.',
           icon: 'error',
         });
         return;
       }
-      if (actividad === 'Dirección de grupos de investigación' && Number(value) > 3) {
+      if (actividad === 'Dirección de grupos de investigación' && Number(value) > 2) {
         Swal.fire({
           title: 'Error',
-          text: 'La dirección de grupos de investigación no puede superar 3 horas semanales.',
+          text: 'La dirección de grupos de investigación no puede superar 2 horas semanales.',
           icon: 'error',
         });
         return;
@@ -141,6 +141,14 @@ export const LaboresCientificas = forwardRef((props, ref) => {
         Swal.fire({
           title: 'Error',
           text: 'La elaboración de artículos científicos no puede superar 2 horas semanales.',
+          icon: 'error',
+        });
+        return;
+      }
+      if (actividad === 'Gestión de proyectos de investigación CTeI' && Number(value) > 19) {
+        Swal.fire({
+          title: 'Error',
+          text: 'La gestión de semilleros de investigación no puede superar 19 horas semanales.',
           icon: 'error',
         });
         return;

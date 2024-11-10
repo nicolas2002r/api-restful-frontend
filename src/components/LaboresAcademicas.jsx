@@ -184,6 +184,18 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
       }
 
       if (
+        nuevasFormativas[index].actividad === 'Cursos de fortalecimiento dirigido a estudiantes' &&
+        Number(value) > 1
+      ) {
+        Swal.fire({
+          title: 'Error',
+          text: `Las horas para Cursos de fortalecimiento dirigido a estudiantes tiene un límite de 1 hora semanal`,
+          icon: 'error',
+        });
+        return;
+      }
+
+      if (
         nuevasFormativas[index].actividad === 'Asesoría en emprendimiento' &&
         Number(value) > 2
       ) {
@@ -249,6 +261,7 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
                   value={actividad.horasSemanales}
                   onChange={(e) => handleAcademicasChange(index, 'horasSemanales', e.target.value)}
                   className="input-field"
+                  min = "0"
                 />
               </td>
               <td className="border border-gray-300 p-2">
@@ -303,6 +316,7 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
                   value={actividad.horasSemanales}
                   onChange={(e) => handleFormativasChange(index, 'horasSemanales', e.target.value)}
                   className="input-field"
+                  min = "0"
                 />
               </td>
               <td className="border border-gray-300 p-2">

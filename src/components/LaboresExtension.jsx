@@ -123,42 +123,42 @@ export const LaboresExtension = forwardRef((props, ref) => {
     } else if (field === 'horasSemanales') {
       const actividad = nuevasExtension[index].actividad;
 
-      if (actividad === 'Gestión de proyectos de consultoría' && Number(value) > 5) {
+      if (actividad === 'Gestión de proyectos de consultoría' && Number(value) > 1) {
         Swal.fire({
           title: 'Error',
-          text: 'La gestión de proyectos de consultoría no puede superar 5 horas semanales.',
+          text: 'La gestión de proyectos de consultoría no puede superar 1 hora semanal.',
           icon: 'error',
         });
         return;
       }
-      if (actividad === 'Acompañamiento al sector empresarial' && Number(value) > 4) {
+      if (actividad === 'Acompañamiento al sector empresarial' && Number(value) > 1) {
         Swal.fire({
           title: 'Error',
-          text: 'El acompañamiento al sector empresarial no puede superar 4 horas semanales.',
+          text: 'El acompañamiento al sector empresarial no puede superar 1 hora semanal.',
           icon: 'error',
         });
         return;
       }
-      if (actividad === 'Participación en proyectos de intervención comunitaria' && Number(value) > 4) {
+      if (actividad === 'Participación en proyectos de intervención comunitaria' && Number(value) > 3) {
         Swal.fire({
           title: 'Error',
-          text: 'La participación en proyectos de intervención comunitaria no puede superar 4 horas semanales.',
+          text: 'La participación en proyectos de intervención comunitaria no puede superar 3 horas semanales.',
           icon: 'error',
         });
         return;
       }
-      if (actividad === 'Gestión de proyectos culturales' && Number(value) > 3) {
+      if (actividad === 'Gestión de proyectos culturales' && Number(value) > 1) {
         Swal.fire({
           title: 'Error',
-          text: 'La gestión de proyectos culturales no puede superar 3 horas semanales.',
+          text: 'La gestión de proyectos culturales no puede superar 1 hora semanal.',
           icon: 'error',
         });
         return;
       }
-      if (actividad === 'Promoción de la educación artística' && Number(value) > 2) {
+      if (actividad === 'Promoción de la educación artística' && Number(value) > 1) {
         Swal.fire({
           title: 'Error',
-          text: 'La promoción de la educación artística no puede superar 2 horas semanales.',
+          text: 'La promoción de la educación artística no puede superar 1 hora semanal.',
           icon: 'error',
         });
         return;

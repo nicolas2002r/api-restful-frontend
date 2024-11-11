@@ -60,7 +60,7 @@ export const EnviosDirector = ({ files = [] }) => {
           <th>Programa</th> 
           <th>Fecha</th> 
           <th>Periodo</th> 
-          <th>Estado</th> 
+          <th>Director de programa</th> 
         </tr>
       </thead>
       <tbody>

@@ -7,8 +7,12 @@ import axios from 'axios';
 
 export const UserRegistrationPage = () => {
   const [data, setData] = useState([]);
-  const formRef = useRef(null);  // Referencia al formulario
-  const tableRef = useRef(null);  // Referencia a la tabla
+  const formRef = useRef(null);
+  const tableRef = useRef(null);
+
+  const refreshData = (newData) => {
+    setData(newData);
+  };
 
   const initialFormState = {
     Nombres: "",
@@ -18,6 +22,7 @@ export const UserRegistrationPage = () => {
     Rol: "Docente de Planta",
     Programas: [],
     TipoInvestigador: "",
+    Id: null,
   };
 
   const [form, setForm] = useState(initialFormState);
@@ -26,10 +31,9 @@ export const UserRegistrationPage = () => {
 
   const availablePrograms = [
     "Ingeniería de Sistemas",
-    "Ingeniería Electrónica",
-    "Ingeniería Ambiental",
-    "Ingeniería de Renovables",
-    "Ingeniería Industrial"
+    "Ingeniería Industrial",
+    "Ingeniería Mecatronica",
+    "Ingeniería Energias Renovables",
   ];
 
   const fetchData = async () => {
@@ -44,10 +48,14 @@ export const UserRegistrationPage = () => {
         Apellidos: user.apellido,
         Cedula: user.dni,
         Correo: user.correo,
-        Rol: user.rol,
-        Programas: Array.isArray(user.programas) ? user.programas : [],
-        TipoInvestigador: user.TipoInvestigador || "N/A"
-      }));
+        Rol: user.rol.nombre,
+        Programas: Array.isArray(user.programasAcademicos)
+          ? user.programasAcademicos.map(p => typeof p === 'string' ? { nombre: p } : p)
+          : [],
+        TipoInvestigador: user.TipoInvestigador || "N/A",
+        Id: user.id, 
+
+      }));      
 
       setData(formattedResult);
     } catch (error) {
@@ -78,6 +86,44 @@ export const UserRegistrationPage = () => {
       Programas: selectedPrograms || [],
     }));
   };
+  const handleDelete = async () => {
+    if (form.Id === null) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Usuario no seleccionado',
+        text: 'Por favor, selecciona un usuario para eliminar.',
+      });
+      return;
+    }
+
+    try {
+      await axios.delete(`http://localhost:8080/api/usuarios/${form.Id}`);
+      setData(data.filter(user => user.Id !== form.Id)); // Actualiza la lista sin el usuario eliminado
+      setForm({
+        Nombres: "",
+        Apellidos: "",
+        Cedula: "",
+        Correo: "",
+        Rol: "Docente de Planta",
+        Programas: [],
+        TipoInvestigador: "",
+        Id: null,
+      });
+      setEditIndex(null);
+      Swal.fire({
+        icon: 'success',
+        title: 'Usuario eliminado',
+        text: 'El usuario ha sido eliminado correctamente.',
+      });
+    } catch (error) {
+      console.error('Error al eliminar el usuario:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al eliminar el usuario.',
+      });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -88,18 +134,13 @@ export const UserRegistrationPage = () => {
 
     try {
       if (editIndex !== null) {
-        // Actualización de usuario
         const updatedData = [...data];
         updatedData[editIndex] = userData;
         setData(updatedData);
         setEditIndex(null);
       } else {
-        // Agregar nuevo usuario al backend
         const response = await axios.post('http://localhost:8080/api/usuarios', userData);
-
-        // Verificar que la respuesta contiene los datos del nuevo usuario
         if (response && response.data) {
-          // Actualizar el estado `data` con el nuevo usuario
           setData([...data, {
             Nombres: response.data.nombre,
             Apellidos: response.data.apellido,
@@ -124,7 +165,16 @@ export const UserRegistrationPage = () => {
   };
 
   const handleEdit = (index) => {
-    setForm(data[index]);
+    const user = data[index];
+    setForm({
+      Nombres: user.Nombres,
+      Apellidos: user.Apellidos,
+      Cedula: user.Cedula,
+      Correo: user.Correo,
+      Rol: user.Rol,
+      Programas: user.Programas.map(p => p.nombre), // Convertir el array de objetos a solo nombres
+      Id: user.id, 
+    });
     setEditIndex(index);
     setSelectedRowIndex(index);
   };
@@ -161,9 +211,10 @@ export const UserRegistrationPage = () => {
             handleChange={handleChange}
             handleSubmit={handleSubmit}
             editIndex={editIndex}
-            setEditIndex={setEditIndex}
             availablePrograms={availablePrograms}
             handleProgramChange={handleProgramChange}
+            refreshData={refreshData}
+            handleDelete={handleDelete}
           />
         </div>
 
@@ -199,11 +250,12 @@ export const UserRegistrationPage = () => {
                     <ul>
                       {Array.isArray(item.Programas) && item.Programas.length > 0
                         ? item.Programas.map((programa, idx) => (
-                          <li key={idx}>{programa}</li>
+                          <li key={idx}>{programa.nombre ? programa.nombre : "Nombre no disponible"}</li>
                         ))
                         : <li>Ninguno</li>}
                     </ul>
                   </td>
+
                   <td>{item.TipoInvestigador || "N/A"}</td>
                 </tr>
               ))}

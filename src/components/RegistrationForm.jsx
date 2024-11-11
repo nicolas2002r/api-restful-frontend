@@ -1,4 +1,3 @@
-// RegistrationForm.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from 'reactstrap';
 import axios from 'axios';
@@ -13,6 +12,7 @@ const RegistrationForm = ({
   handleDelete,
   availablePrograms,
   handleProgramChange,
+  refreshData,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -35,51 +35,89 @@ const RegistrationForm = ({
   };
 
   const onProgramSelect = (program) => {
+    const programName = typeof program === 'string' ? program : program.nombre;
     if (form.Rol.includes("Docente")) {
-      if (form.Programas.includes(program)) {
-        handleProgramChange(form.Programas.filter(p => p !== program));
+      if (form.Programas.includes(programName)) {
+        handleProgramChange(form.Programas.filter(p => p !== programName));
       } else {
-        handleProgramChange([...form.Programas, program]);
+        handleProgramChange([...form.Programas, programName]);
       }
     } else {
-      handleProgramChange([program]);
+      handleProgramChange([programName]);
       setDropdownOpen(false);
     }
   };
 
-  // Función para manejar el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Mapear los campos del front-end a los que espera el back-end
+  
+    // Configuración del payload con la estructura esperada por la API
     const payload = {
-      nombre: form.Nombres,             // Nombres -> nombre
-      apellido: form.Apellidos,         // Apellidos -> apellido
-      dni: form.Cedula,                 // Cedula -> dni
-      correo: form.Correo,              // Correo -> correo
-      rol: {
-        nombre: form.Rol                // Rol -> rol.nombre
-      },
-      programasAcademicos: form.Programas.map((program) => ({
-        nombre: program                 // Programas -> programasAcademicos con nombre
-      })),
+      id: form.Id || 0, // Se incluye el ID solo si es en modo edición
+      nombre: form.Nombres,
+      apellido: form.Apellidos,
+      dni: form.Cedula,
+      correo: form.Correo,
+      rol: { nombre: form.Rol },
+      programasAcademicos: form.Programas.map(program => ({ nombre: program })), // Asumiendo que la API espera esta estructura
     };
   
     try {
-      const response = await axios.post('http://localhost:8080/api/usuarios', payload);
-      console.log('Usuario registrado:', response.data);
-      // Opcional: limpiar el formulario o mostrar un mensaje de éxito aquí
+      let response;
+      if (editIndex !== null) {
+        // Si estamos en modo edición, se usa el endpoint de PUT
+        response = await axios.put(`http://localhost:8080/api/usuarios/${form.Id}`, payload);
+      } else {
+        // Si estamos en modo creación, se usa el endpoint de POST
+        response = await axios.post('http://localhost:8080/api/usuarios', payload);
+      }
+  
+      // Comprobación del status de la respuesta para confirmar la operación exitosa
+      if (response.status === 200 || response.status === 201) {
+        // Se obtiene la lista de usuarios actualizada
+        const usersResponse = await axios.get('http://localhost:8080/api/usuarios');
+        if (Array.isArray(usersResponse.data)) {
+          const formattedData = usersResponse.data.map(user => ({
+            Nombres: user.nombre,
+            Apellidos: user.apellido,
+            Cedula: user.dni,
+            Correo: user.correo,
+            Rol: user.rol.nombre, // Asegurarse que rol tiene un subatributo nombre
+            Programas: Array.isArray(user.programasAcademicos)
+              ? user.programasAcademicos.map(program => program.nombre)
+              : [],
+            TipoInvestigador: user.TipoInvestigador || "N/A",
+          }));
+          refreshData(formattedData); // Actualiza el estado con los datos formateados
+        }
+        setEditIndex(null); // Reinicia el índice de edición
+        Swal.fire({
+          icon: 'success',
+          title: 'Operación exitosa',
+          text: editIndex !== null ? 'El usuario ha sido actualizado correctamente' : 'El usuario ha sido registrado correctamente',
+        });
+      } else {
+        // Si la respuesta no es satisfactoria
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un problema al registrar o actualizar la información',
+        });
+      }
     } catch (error) {
+      // Muestra una alerta en caso de error en el servidor
       Swal.fire({
         icon: 'error',
-        title: 'Error',
-        text: 'Hubo un problema al registrar la información',
+        title: 'Error en el servidor',
+        text: 'No se pudo completar la operación',
       });
     }
-  };
+  };  
+
 
   return (
     <form onSubmit={handleSubmit}>
+      {/* Campos del formulario */}
       <div className="form-group-custom">
         <label htmlFor="Nombres">Nombres</label>
         <div className="input-group-custom">
@@ -209,24 +247,25 @@ const RegistrationForm = ({
             </div>
           )}
         </div>
-        {/* Mostrar los programas seleccionados */}
-        <div className="selected-programs">
+      </div>
+
+      {/* Mostrar los programas seleccionados */}
+      <div className="selected-programs">
           {form.Programas.length > 0 && (
             <ul>
-              {form.Programas.map((program, index) => (
-                <li key={index}>{program}</li>
-              ))}
-            </ul>
+            {form.Programas.map((program, index) => (
+              <li key={index}>{typeof program === 'string' ? program : program.nombre}</li>
+            ))}
+          </ul>          
           )}
         </div>
-      </div>
 
       <div className="button-container">
         <Button color="success" type="submit" className="me-3">
           {editIndex !== null ? "Guardar cambios" : "Registrar"}
         </Button>
         {editIndex !== null && (
-          <Button color="danger" onClick={() => handleDelete(editIndex)}>
+          <Button color="danger" onClick={handleDelete}>
             Eliminar Usuario
           </Button>
         )}

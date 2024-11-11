@@ -100,8 +100,8 @@ export const MisAgendasPage = ({ files = [] }) => {
                             <th>Programa</th>
                             <th>Fecha</th>
                             <th>Periodo</th>
-                            <th>Estado</th>
-                            <th>Estado Aprobación</th> {/* Nueva columna para el estado de aprobación */}
+                            <th>Director de progrma</th>
+                            <th>Decano</th>
                         </tr>
                     </thead>
                     <tbody>

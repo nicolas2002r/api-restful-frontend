@@ -49,13 +49,13 @@ export const Userform = () => {
     else if (idNumber === '9876' && password === '9876') {
       console.log("Autenticado como Director de Programa");
       login();
-      navigate("/RevisionDirector"); // Redirige a la vista correspondiente del decano
+      navigate("/HomeDirector"); // Redirige a la vista correspondiente del decano
     }
     // Autenticación para el rol de Decano (usuario '1111')
     else if (idNumber === '1111' && password === '1111') {
       console.log("Autenticado como Decano");
       login();
-      navigate("/RevisionDecano"); // Redirige a la vista correspondiente del decano
+      navigate("/HomeDecano"); // Redirige a la vista correspondiente del decano
     } else {
       alert("Número de identificación o contraseña incorrectos.");
     }

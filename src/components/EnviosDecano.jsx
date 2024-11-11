@@ -61,8 +61,8 @@ export const EnviosDecano = ({ files = [] }) => {
           <th>Programa</th>
           <th>Fecha</th> 
           <th>Periodo</th>
-          <th>Estado</th> 
-          <th>Estado Aprobación</th> 
+          <th>Director de programa</th> 
+          <th>Decano</th> 
         </tr>
       </thead>
       <tbody>

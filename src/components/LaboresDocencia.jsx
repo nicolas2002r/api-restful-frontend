@@ -2,7 +2,7 @@ import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'rea
 import Swal from 'sweetalert2';
 import { Dropdown, Button, Table, Modal, Form } from 'react-bootstrap';
 import '../index.css';
- 
+
 export const LaboresDocencia = forwardRef((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [entries, setEntries] = useState([]);
@@ -17,11 +17,34 @@ export const LaboresDocencia = forwardRef((props, ref) => {
     horasSemestre: ''
   });
 
+  const programasData = {
+    "Ingeniería de Sistemas": {
+      asignaturas: {
+        "Programación": { grupo: "Grupo A", sede: "Sede Principal", horasSemanales: 12 },
+        "Diseño de Software": { grupo: "Grupo A", sede: "Sede Principal", horasSemanales: 10 },
+        "Redes": { grupo: "Grupo A", sede: "Sede Principal", horasSemanales: 8 },
+      }
+    },
+    "Ingeniería Electrónica": {
+      asignaturas: {
+        "Circuitos": { grupo: "Grupo B", sede: "Sede Norte", horasSemanales: 10 },
+        "Electrónica Básica": { grupo: "Grupo A", sede: "Sede Norte", horasSemanales: 9 },
+        "Instrumentación": { grupo: "Grupo B", sede: "Sede Norte", horasSemanales: 11 },
+      }
+    },
+    "Ingeniería Industrial": {
+      asignaturas: {
+        "Logística": { grupo: "Grupo C", sede: "Sede Sur", horasSemanales: 9 },
+        "Gestión de Calidad": { grupo: "Grupo B", sede: "Sede Sur", horasSemanales: 10 },
+        "Procesos Industriales": { grupo: "Grupo C", sede: "Sede Sur", horasSemanales: 8 },
+      }
+    },
+  };
+
   useEffect(() => {
     props.actualizarTotales();
-  }, [entries]); // Cada vez que cambien las entradas, actualiza los totales
-  
-  // Cargar las entradas desde localStorage al montar el componente
+  }, [entries]);
+
   useEffect(() => {
     const storedEntries = localStorage.getItem('laboresDocencia');
     if (storedEntries) {
@@ -29,7 +52,6 @@ export const LaboresDocencia = forwardRef((props, ref) => {
     }
   }, []);
 
-  // Guardar las entradas en localStorage cada vez que cambien
   useEffect(() => {
     if (entries.length > 0) {
       localStorage.setItem('laboresDocencia', JSON.stringify(entries));
@@ -50,9 +72,32 @@ export const LaboresDocencia = forwardRef((props, ref) => {
     setNewEntry({ ...newEntry, [name]: value });
   };
 
+  const handleProgramSelect = (programa) => {
+    const programInfo = programasData[programa];
+    const firstAsignatura = Object.keys(programInfo.asignaturas)[0];
+    setNewEntry({
+      programa,
+      asignatura: firstAsignatura,
+      grupo: programInfo.asignaturas[firstAsignatura].grupo,
+      sede: programInfo.asignaturas[firstAsignatura].sede,
+      horasSemanales: programInfo.asignaturas[firstAsignatura].horasSemanales,
+      horasSemestre: '',
+    });
+  };
+
+  const handleAsignaturaSelect = (asignatura) => {
+    const asignaturaData = programasData[newEntry.programa]?.asignaturas[asignatura];
+    setNewEntry({
+      ...newEntry,
+      asignatura,
+      grupo: asignaturaData.grupo,
+      sede: asignaturaData.sede,
+      horasSemanales: asignaturaData.horasSemanales,
+    });
+  };
+  
   const calcularTotalHoras = (tipo) => {
     if (!entries || entries.length === 0) return 0;
-
     return entries.reduce((total, entry) => {
       const horas = parseFloat(entry[tipo]);
       return total + (!isNaN(horas) ? horas : 0);
@@ -90,7 +135,7 @@ export const LaboresDocencia = forwardRef((props, ref) => {
       updatedEntries.splice(selectedRowIndex, 1);
       setEntries(updatedEntries);
       setSelectedRowIndex(null);
-      localStorage.setItem('laboresDocencia', JSON.stringify(updatedEntries)); // Actualizar localStorage
+      localStorage.setItem('laboresDocencia', JSON.stringify(updatedEntries)); 
     }
   };
 
@@ -116,8 +161,6 @@ export const LaboresDocencia = forwardRef((props, ref) => {
   };
 
   return (
-
-
     <div className="p-4">
       <h5 className="text-xl font-bold mb-4">Orientación de Clases - Docencia</h5>
       <div className="mb-3">
@@ -170,18 +213,14 @@ export const LaboresDocencia = forwardRef((props, ref) => {
           <Form onSubmit={AgregarEntrada}>
             <Form.Group className="mb-3">
               <Form.Label>Programa</Form.Label>
-              <Dropdown>
-                <Dropdown.Toggle variant="light" id="dropdown-basic">
-                  {newEntry.programa || 'Seleccione un programa'}
+              <Dropdown onSelect={handleProgramSelect}>
+                <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                  {newEntry.programa || "Selecciona el programa"}
                 </Dropdown.Toggle>
-
                 <Dropdown.Menu>
-                  {['Ingeniería de Sistemas', 'Ingeniería Electrónica', 'Ingeniería Industrial'].map((option, index) => (
-                    <Dropdown.Item
-                      key={index}
-                      onClick={() => setNewEntry({ ...newEntry, programa: option })}
-                    >
-                      {option}
+                  {Object.keys(programasData).map((programa) => (
+                    <Dropdown.Item key={programa} eventKey={programa}>
+                      {programa}
                     </Dropdown.Item>
                   ))}
                 </Dropdown.Menu>
@@ -189,19 +228,15 @@ export const LaboresDocencia = forwardRef((props, ref) => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Nombre de la asignatura</Form.Label>
-              <Dropdown>
-                <Dropdown.Toggle variant="light" id="dropdown-basic">
-                  {newEntry.asignatura || 'Seleccione una asignatura'}
+              <Form.Label>Asignatura</Form.Label>
+              <Dropdown onSelect={handleAsignaturaSelect}>
+                <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                  {newEntry.asignatura || "Selecciona la asignatura"}
                 </Dropdown.Toggle>
-
                 <Dropdown.Menu>
-                  {['Matemáticas', 'Física', 'Programación', 'Diseño de Software'].map((option, index) => (
-                    <Dropdown.Item
-                      key={index}
-                      onClick={() => setNewEntry({ ...newEntry, asignatura: option })}
-                    >
-                      {option}
+                  {newEntry.programa && programasData[newEntry.programa]?.asignaturas && Object.keys(programasData[newEntry.programa].asignaturas).map((asignatura) => (
+                    <Dropdown.Item key={asignatura} eventKey={asignatura}>
+                      {asignatura}
                     </Dropdown.Item>
                   ))}
                 </Dropdown.Menu>
@@ -210,59 +245,25 @@ export const LaboresDocencia = forwardRef((props, ref) => {
 
             <Form.Group className="mb-3">
               <Form.Label>Grupo</Form.Label>
-              <Dropdown>
-                <Dropdown.Toggle variant="light" id="dropdown-basic">
-                  {newEntry.grupo || 'Seleccione un grupo'}
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu>
-                  {['Grupo A', 'Grupo B', 'Grupo C'].map((option, index) => (
-                    <Dropdown.Item
-                      key={index}
-                      onClick={() => setNewEntry({ ...newEntry, grupo: option })}
-                    >
-                      {option}
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
+              <Form.Control type="text" value={newEntry.grupo} disabled />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Sede</Form.Label>
-              <Dropdown>
-                <Dropdown.Toggle variant="light" id="dropdown-basic">
-                  {newEntry.sede || 'Seleccione una sede'}
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu>
-                  {['Sede Principal', 'Sede Norte', 'Sede Sur'].map((option, index) => (
-                    <Dropdown.Item
-                      key={index}
-                      onClick={() => setNewEntry({ ...newEntry, sede: option })}
-                    >
-                      {option}
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
+              <Form.Control type="text" value={newEntry.sede} disabled />
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Dedicación (Horas semanales)</Form.Label>
+              <Form.Label>Horas Semanales</Form.Label>
               <Form.Control
                 type="number"
                 name="horasSemanales"
                 value={newEntry.horasSemanales}
-                onChange={handleInputChange}
-                min="0"
-                required
+                disabled
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit">
-              Guardar
-            </Button>
+            <Button variant="primary" type="submit">Agregar</Button>
           </Form>
         </Modal.Body>
       </Modal>

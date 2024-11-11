@@ -166,8 +166,8 @@ export const AgendaDocentePage = () => {
             <div className="mt-3">
               <LaboresExtension
                 ref={laboresExtensionRef}
-                totalHorasSemanalesCientificas={totalHorasSemanalesCientificas}
-                totalHorasSemestralesCientificas={totalHorasSemestralesCientificas}
+                totalHorasSemanalesDocencia={totalHorasSemanalesDocencia}
+                totalHorasSemestralesDocencia={totalHorasSemestralesDocencia}
                 onHorasSemanalesExtensionChange={handleHorasSemanalesExtensionChange}
               />
             </div>
@@ -176,8 +176,8 @@ export const AgendaDocentePage = () => {
             <div className="mt-3">
               <GestionAcademica
                 ref={gestionAcademicaRef}
-                totalHorasSemanalesExtension={totalHorasSemanalesExtension}
-                totalHorasSemestralesExtension={totalHorasSemestralesExtension}
+                totalHorasSemanalesDocencia={totalHorasSemanalesDocencia}
+                totalHorasSemestralesDocencia={totalHorasSemestralesDocencia}
                 onHorasSemanalesGAcademicasChange={handleHorasSemanalesGAcademicasChange}
               />
             </div>
@@ -186,7 +186,7 @@ export const AgendaDocentePage = () => {
       </div>
       <div className="button-container mt-2">
         <div className="horas-container mt-2">
-          <p>Horas Totales: {totalHorasSemanalesRestantes} Horas Restantes: {totalHorasSemestralesRestantes}</p>
+          <p>Horas Semanales: {totalHorasSemanalesRestantes} Horas Semestrales: {totalHorasSemestralesRestantes}</p>
         </div>
         <Button className="B-general" variant="outlined" onClick={handleVaciar} style={{ marginRight: '10px' }}>
           Vaciar

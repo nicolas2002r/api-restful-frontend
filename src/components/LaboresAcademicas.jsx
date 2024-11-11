@@ -4,7 +4,7 @@ import '../index.css';
 import { CheckboxDropdown } from "../components/UI/CheckboxDropdown";
 
 export const LaboresAcademicas = forwardRef((props, ref) => {
-  const { onHorasSemanalesChange } = props;
+  const { onHorasSemanalesChange, totalHorasSemanalesDocencia } = props;
   const productoOptionsMap = {
     'Preparación de clases': [
       'SYLLABUS DE LA ASIGNATURA',
@@ -120,101 +120,73 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
   }));
 
   // Manejadores de cambios en las labores académicas
+  const calcularHorasSemanales = (actividad) => {
+    if (actividad === 'Preparación de clases' || actividad === 'Evaluación de aprendizaje a estudiantes') {
+      return (totalHorasSemanalesDocencia * 0.2).toFixed(2); // 20% para preparación y evaluación
+    }
+    if (actividad === 'Acompañamiento académico a estudiantes') {
+      return (totalHorasSemanalesDocencia * 0.1).toFixed(2); // 10% para acompañamiento
+    }
+    if (actividad === 'Gestión de eventos académicos') {
+      return 1; // Límite de 1 hora semanal para gestión de eventos
+    }
+    return 0;
+  };
+
   const handleAcademicasChange = (index, field, value) => {
     const nuevasAcademicas = [...academicas];
 
-    // Validación de horas para las actividades académicas
+    // Si el campo es 'horasSemanales', lo calculamos automáticamente
     if (field === 'horasSemanales') {
-      const horasDocencia = props.horasSemanales;
-      const maxHoras = (horasDocencia * 0.2).toFixed(2); // 20% de horas para preparación o evaluación
-
-      if (
-        nuevasAcademicas[index].actividad === 'Preparación de clases' ||
-        nuevasAcademicas[index].actividad === 'Evaluación de aprendizaje a estudiantes'
-      ) {
-        if (Number(value) > maxHoras) {
-          Swal.fire({
-            title: 'Error',
-            text: `Las horas semanales no pueden exceder el 20% de las horas de docencia (${maxHoras} horas).`,
-            icon: 'error',
-          });
-          return;
-        }
-      }
-
-      if (
-        nuevasAcademicas[index].actividad === 'Gestión de eventos académicos' &&
-        Number(value) > 1
-      ) {
-        Swal.fire({
-          title: 'Error',
-          text: 'La gestión de eventos académicos tiene un límite de 1 hora semanal.',
-          icon: 'error',
-        });
-        return;
-      }
-
-      nuevasAcademicas[index].horasSemanales = Number(value);
-      nuevasAcademicas[index].horasSemestrales = Number(value) * 16;
+      const horasSemanales = calcularHorasSemanales(nuevasAcademicas[index].actividad);
+      nuevasAcademicas[index].horasSemanales = Number(horasSemanales);
+      nuevasAcademicas[index].horasSemestrales = Number(horasSemanales) * 16;
     } else {
       nuevasAcademicas[index][field] = value;
     }
 
     setAcademicas(nuevasAcademicas);
   };
-
-  // Manejadores de cambios en las labores formativas
   const handleFormativasChange = (index, field, value) => {
     const nuevasFormativas = [...formativas];
-
-    if (field === 'horasSemanales') {
-      const horasDocencia = props.totalHorasDocencia;
-      const maxHorasAcomp = (horasDocencia * 0.1).toFixed(2); // 10% para acompañamiento
-
-      if (
-        nuevasFormativas[index].actividad === 'Acompañamiento académico a estudiantes' &&
-        Number(value) > maxHorasAcomp
-      ) {
-        Swal.fire({
-          title: 'Error',
-          text: `Las horas para acompañamiento académico no pueden exceder el 10% de las horas de docencia (${maxHorasAcomp} horas).`,
-          icon: 'error',
-        });
-        return;
-      }
-
-      if (
-        nuevasFormativas[index].actividad === 'Cursos de fortalecimiento dirigido a estudiantes' &&
-        Number(value) > 1
-      ) {
-        Swal.fire({
-          title: 'Error',
-          text: `Las horas para Cursos de fortalecimiento dirigido a estudiantes tiene un límite de 1 hora semanal`,
-          icon: 'error',
-        });
-        return;
-      }
-
-      if (
-        nuevasFormativas[index].actividad === 'Asesoría en emprendimiento' &&
-        Number(value) > 2
-      ) {
-        Swal.fire({
-          title: 'Error',
-          text: 'La asesoría en emprendimiento tiene un límite de 2 horas por emprendimiento.',
-          icon: 'error',
-        });
-        return;
-      }
-
-      nuevasFormativas[index].horasSemanales = Number(value);
-      nuevasFormativas[index].horasSemestrales = Number(value) * 16;
+  
+    // Verifica si la actividad es "Acompañamiento académico a estudiantes" y el campo es "horasSemanales"
+    if (nuevasFormativas[index].actividad === 'Acompañamiento académico a estudiantes' && field === 'horasSemanales') {
+      // Calcula automáticamente el 10% de las horas de docencia para esta actividad
+      const horasAcompañamiento = (totalHorasSemanalesDocencia * 0.1).toFixed(2);
+      nuevasFormativas[index].horasSemanales = Number(horasAcompañamiento);
+      nuevasFormativas[index].horasSemestrales = Number(horasAcompañamiento) * 16;
     } else {
-      nuevasFormativas[index][field] = value;
+      // Restricciones específicas para las demás actividades de labores formativas
+      if (field === 'horasSemanales') {
+        if (nuevasFormativas[index].actividad === 'Cursos de fortalecimiento dirigido a estudiantes' && Number(value) > 1) {
+          Swal.fire({
+            title: 'Error',
+            text: `Las horas para Cursos de fortalecimiento dirigido a estudiantes tienen un límite de 1 hora semanal`,
+            icon: 'error',
+          });
+          return;
+        }
+        if (nuevasFormativas[index].actividad === 'Asesoría en emprendimiento' && Number(value) > 2) {
+          Swal.fire({
+            title: 'Error',
+            text: 'La asesoría en emprendimiento tiene un límite de 2 horas por emprendimiento.',
+            icon: 'error',
+          });
+          return;
+        }
+  
+        // Establece las horas manuales para las otras actividades de labores formativas
+        nuevasFormativas[index].horasSemanales = Number(value);
+        nuevasFormativas[index].horasSemestrales = Number(value) * 16;
+      } else {
+        nuevasFormativas[index][field] = value;
+      }
     }
-
+  
     setFormativas(nuevasFormativas);
   };
+  
 
   // Cálculo de horas totales
   const totalHorasSemanales = () => {
@@ -261,7 +233,6 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
                   value={actividad.horasSemanales}
                   onChange={(e) => handleAcademicasChange(index, 'horasSemanales', e.target.value)}
                   className="input-field"
-                  min = "0"
                 />
               </td>
               <td className="border border-gray-300 p-2">
@@ -316,7 +287,7 @@ export const LaboresAcademicas = forwardRef((props, ref) => {
                   value={actividad.horasSemanales}
                   onChange={(e) => handleFormativasChange(index, 'horasSemanales', e.target.value)}
                   className="input-field"
-                  min = "0"
+                  min="0"
                 />
               </td>
               <td className="border border-gray-300 p-2">

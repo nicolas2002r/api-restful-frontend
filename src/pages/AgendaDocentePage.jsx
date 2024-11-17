@@ -111,8 +111,7 @@ export const AgendaDocentePage = () => {
   useEffect(() => {
     actualizarTotalesDocencia();
   }, [value]);
-
-
+  
   return (
     <div className="container mt-4">
       <h3>AGENDA DOCENTE</h3>

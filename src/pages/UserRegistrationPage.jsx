@@ -10,9 +10,6 @@ export const UserRegistrationPage = () => {
   const formRef = useRef(null);
   const tableRef = useRef(null);
 
-  const refreshData = (newData) => {
-    setData(newData);
-  };
 
   const initialFormState = {
     Nombres: "",
@@ -22,7 +19,6 @@ export const UserRegistrationPage = () => {
     Rol: "Docente de Planta",
     Programas: [],
     TipoInvestigador: "",
-    Id: null,
   };
 
   const [form, setForm] = useState(initialFormState);
@@ -38,12 +34,13 @@ export const UserRegistrationPage = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/usuarios');
+      const response = await axios.get(' https://api-restful-backend.onrender.com/api/usuarios');
       if (!Array.isArray(response.data)) {
         throw new Error('La respuesta no es un arreglo');
       }
 
       const formattedResult = response.data.map(user => ({
+        Id: user.id,
         Nombres: user.nombre,
         Apellidos: user.apellido,
         Cedula: user.dni,
@@ -52,10 +49,7 @@ export const UserRegistrationPage = () => {
         Programas: Array.isArray(user.programasAcademicos)
           ? user.programasAcademicos.map(p => typeof p === 'string' ? { nombre: p } : p)
           : [],
-        TipoInvestigador: user.TipoInvestigador || "N/A",
-        Id: user.id, 
-
-      }));      
+      }));
 
       setData(formattedResult);
     } catch (error) {
@@ -86,94 +80,19 @@ export const UserRegistrationPage = () => {
       Programas: selectedPrograms || [],
     }));
   };
-  const handleDelete = async () => {
-    if (form.Id === null) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Usuario no seleccionado',
-        text: 'Por favor, selecciona un usuario para eliminar.',
-      });
-      return;
-    }
 
-    try {
-      await axios.delete(`http://localhost:8080/api/usuarios/${form.Id}`);
-      setData(data.filter(user => user.Id !== form.Id)); // Actualiza la lista sin el usuario eliminado
-      setForm({
-        Nombres: "",
-        Apellidos: "",
-        Cedula: "",
-        Correo: "",
-        Rol: "Docente de Planta",
-        Programas: [],
-        TipoInvestigador: "",
-        Id: null,
-      });
-      setEditIndex(null);
-      Swal.fire({
-        icon: 'success',
-        title: 'Usuario eliminado',
-        text: 'El usuario ha sido eliminado correctamente.',
-      });
-    } catch (error) {
-      console.error('Error al eliminar el usuario:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Hubo un problema al eliminar el usuario.',
-      });
-    }
-  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const userData = {
-      ...form,
-      Programas: form.Programas || [],
-    };
-
-    try {
-      if (editIndex !== null) {
-        const updatedData = [...data];
-        updatedData[editIndex] = userData;
-        setData(updatedData);
-        setEditIndex(null);
-      } else {
-        const response = await axios.post('http://localhost:8080/api/usuarios', userData);
-        if (response && response.data) {
-          setData([...data, {
-            Nombres: response.data.nombre,
-            Apellidos: response.data.apellido,
-            Cedula: response.data.dni,
-            Correo: response.data.correo,
-            Rol: response.data.rol,
-            Programas: Array.isArray(response.data.programas) ? response.data.programas : [],
-            TipoInvestigador: response.data.TipoInvestigador || "N/A"
-          }]);
-        }
-      }
-    } catch (error) {
-      console.error('Error al guardar el usuario:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Hubo un error al guardar el usuario.',
-      });
-    }
-
-    setForm(initialFormState);
-  };
 
   const handleEdit = (index) => {
     const user = data[index];
     setForm({
+      Id: user.Id,
       Nombres: user.Nombres,
       Apellidos: user.Apellidos,
       Cedula: user.Cedula,
       Correo: user.Correo,
       Rol: user.Rol,
       Programas: user.Programas.map(p => p.nombre), // Convertir el array de objetos a solo nombres
-      Id: user.id, 
     });
     setEditIndex(index);
     setSelectedRowIndex(index);
@@ -209,26 +128,27 @@ export const UserRegistrationPage = () => {
           <RegistrationForm
             form={form}
             handleChange={handleChange}
-            handleSubmit={handleSubmit}
             editIndex={editIndex}
+            setEditIndex={setEditIndex} // Nueva prop para actualizar el índice de edición desde RegistrationForm
             availablePrograms={availablePrograms}
             handleProgramChange={handleProgramChange}
-            refreshData={refreshData}
-            handleDelete={handleDelete}
+            fetchData={fetchData}
+            data={data} // Nueva prop para pasar la lista de usuarios a RegistrationForm
           />
+
         </div>
 
         <div className="table-column" ref={tableRef}>
           <Table>
             <thead>
               <tr>
+                <th>ID</th>
                 <th>Nombre</th>
                 <th>Apellido</th>
                 <th>DNI</th>
                 <th>Correo</th>
                 <th>Rol</th>
                 <th>Programas</th>
-                <th>Investigador</th>
               </tr>
             </thead>
             <tbody>
@@ -237,10 +157,12 @@ export const UserRegistrationPage = () => {
                   key={index}
                   className={selectedRowIndex === index ? "selected-row" : ""}
                   onClick={() => {
+                    console.log('ID del usuario seleccionado:', item.Id); // Muestra el ID en consola
                     handleEdit(index);
                     setSelectedRowIndex(index);
                   }}
                 >
+                  <td>{item.Id}</td>
                   <td>{item.Nombres}</td>
                   <td>{item.Apellidos}</td>
                   <td>{item.Cedula}</td>
@@ -255,10 +177,9 @@ export const UserRegistrationPage = () => {
                         : <li>Ninguno</li>}
                     </ul>
                   </td>
-
-                  <td>{item.TipoInvestigador || "N/A"}</td>
                 </tr>
               ))}
+
             </tbody>
           </Table>
         </div>

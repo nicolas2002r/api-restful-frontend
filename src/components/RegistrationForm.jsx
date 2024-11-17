@@ -8,11 +8,11 @@ const RegistrationForm = ({
   form,
   handleChange,
   editIndex,
-  setEditIndex,
-  handleDelete,
+  setEditIndex, // Nueva prop para actualizar el índice de edición desde RegistrationForm
   availablePrograms,
   handleProgramChange,
-  refreshData,
+  fetchData,
+  data, // Nueva prop para pasar la lista de usuarios a RegistrationForm
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -50,74 +50,133 @@ const RegistrationForm = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    // Configuración del payload con la estructura esperada por la API
-    const payload = {
-      id: form.Id || 0, // Se incluye el ID solo si es en modo edición
-      nombre: form.Nombres,
-      apellido: form.Apellidos,
-      dni: form.Cedula,
-      correo: form.Correo,
-      rol: { nombre: form.Rol },
-      programasAcademicos: form.Programas.map(program => ({ nombre: program })), // Asumiendo que la API espera esta estructura
-    };
-  
-    try {
-      let response;
-      if (editIndex !== null) {
-        // Si estamos en modo edición, se usa el endpoint de PUT
-        response = await axios.put(`http://localhost:8080/api/usuarios/${form.Id}`, payload);
-      } else {
-        // Si estamos en modo creación, se usa el endpoint de POST
-        response = await axios.post('http://localhost:8080/api/usuarios', payload);
-      }
-  
-      // Comprobación del status de la respuesta para confirmar la operación exitosa
-      if (response.status === 200 || response.status === 201) {
-        // Se obtiene la lista de usuarios actualizada
-        const usersResponse = await axios.get('http://localhost:8080/api/usuarios');
-        if (Array.isArray(usersResponse.data)) {
-          const formattedData = usersResponse.data.map(user => ({
-            Nombres: user.nombre,
-            Apellidos: user.apellido,
-            Cedula: user.dni,
-            Correo: user.correo,
-            Rol: user.rol.nombre, // Asegurarse que rol tiene un subatributo nombre
-            Programas: Array.isArray(user.programasAcademicos)
-              ? user.programasAcademicos.map(program => program.nombre)
-              : [],
-            TipoInvestigador: user.TipoInvestigador || "N/A",
-          }));
-          refreshData(formattedData); // Actualiza el estado con los datos formateados
-        }
-        setEditIndex(null); // Reinicia el índice de edición
+
+    // Decide si es un registro o actualización según el estado de editIndex
+    if (editIndex === null) {
+      // Lógica de registro (nuevo usuario)
+      const userPayload = {
+        id: 0,
+        nombre: form.Nombres,
+        apellido: form.Apellidos,
+        dni: form.Cedula,
+        correo: form.Correo,
+        rol: {
+          id: 0,
+          nombre: form.Rol,
+        },
+        programasAcademicos: form.Programas.map(program => ({
+          id: 0,
+          nombre: program,
+        })),
+      };
+
+      try {
+        await axios.post(' https://api-restful-backend.onrender.com/api/usuarios', userPayload);
         Swal.fire({
           icon: 'success',
-          title: 'Operación exitosa',
-          text: editIndex !== null ? 'El usuario ha sido actualizado correctamente' : 'El usuario ha sido registrado correctamente',
+          title: 'Usuario registrado',
+          text: 'El usuario ha sido registrado correctamente.',
         });
-      } else {
-        // Si la respuesta no es satisfactoria
+        fetchData();
+      } catch (error) {
+        console.error('Error al registrar el usuario:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Hubo un problema al registrar o actualizar la información',
+          text: 'Hubo un error al registrar el usuario.',
         });
       }
-    } catch (error) {
-      // Muestra una alerta en caso de error en el servidor
+    } else {
+      // Lógica de actualización (usuario existente)
+      const userPayload = {
+        id: form.Id, // Este es el ID que se debe usar en el PUT
+        nombre: form.Nombres,
+        apellido: form.Apellidos,
+        dni: form.Cedula,
+        correo: form.Correo,
+        rol: {
+          id: 0,
+          nombre: form.Rol,
+        },
+        programasAcademicos: form.Programas.map((program) => ({
+          id: 0,
+          nombre: program,
+        })),
+      };
+    
+      try {
+        // Endpoint con el ID dinámico del usuario
+        await axios.put(` https://api-restful-backend.onrender.com/api/usuarios/${form.Id}`, userPayload);
+        Swal.fire({
+          icon: 'success',
+          title: 'Usuario actualizado',
+          text: 'El usuario ha sido actualizado correctamente.',
+        });
+        fetchData();  // Refrescar la tabla de usuarios después de la actualización
+        setEditIndex(null);  // Resetea editIndex después de la actualización
+      } catch (error) {
+        console.error('Error al actualizar el usuario:', error.response || error.message);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un error al actualizar el usuario. Por favor, revisa la consola para más detalles.',
+        });
+      }
+    }
+  };
+
+
+  const handleDelete = async () => {
+    if (editIndex === null) {
       Swal.fire({
         icon: 'error',
-        title: 'Error en el servidor',
-        text: 'No se pudo completar la operación',
+        title: 'Error',
+        text: 'No hay un usuario seleccionado para eliminar.',
       });
+      return;
+    }
+  
+    try {
+      // Intentar eliminar el usuario
+      const response = await axios.delete(` https://api-restful-backend.onrender.com/api/usuarios/${form.Id}`);
+      console.log('Respuesta del backend:', response);
+  
+      // Mostrar el mensaje de éxito de eliminación
+      await Swal.fire({
+        icon: 'success',
+        title: 'Usuario eliminado',
+        text: 'El usuario ha sido eliminado correctamente.',
+      });
+  
+      // Llamar a fetchData para actualizar la tabla después de eliminar
+      fetchData();
+  
+      // Limpiar el formulario y resetear el estado de edición
+      setForm(initialFormState);
+      setEditIndex(null);
+  
+    } catch (error) {
+      console.error('Error al eliminar el usuario:', error.response || error.message);
     }
   };  
 
-
   return (
     <form onSubmit={handleSubmit}>
-      {/* Campos del formulario */}
+      {editIndex !== null && ( // Solo muestra el campo ID si estamos en modo edición
+        <div className="form-group-custom">
+          <label htmlFor="Id">Id</label>
+          <div className="input-group-custom">
+            <i className="fas fa-user input-icon"></i>
+            <input
+              type="text"
+              name="Id"
+              placeholder="Id"
+              value={form.Id}
+              readOnly // Hace que el campo sea de solo lectura
+            />
+          </div>
+        </div>
+      )}
       <div className="form-group-custom">
         <label htmlFor="Nombres">Nombres</label>
         <div className="input-group-custom">
@@ -196,7 +255,6 @@ const RegistrationForm = ({
         </div>
       </div>
 
-      {/* Lista Desplegable para Programas Académicos */}
       <div className="form-group-custom" ref={dropdownRef}>
         <label>Programas Académicos</label>
         <div className="input-group-custom">
@@ -204,19 +262,15 @@ const RegistrationForm = ({
             type="button"
             className="dropdown-button"
             onClick={toggleDropdown}
-            onMouseDown={(e) => e.preventDefault()} // Evita perder el foco del botón
+            onMouseDown={(e) => e.preventDefault()}
           >
             Seleccionar Programas
           </button>
           {dropdownOpen && (
-            <div
-              className="dropdown-menu-custom"
-              onClick={(e) => e.stopPropagation()} // Detiene la propagación del clic
-            >
+            <div className="dropdown-menu-custom" onClick={(e) => e.stopPropagation()}>
               {availablePrograms.map((program, index) => (
                 <div key={index} className="dropdown-item-custom">
                   {form.Rol.includes("Docente") ? (
-                    // Para Docentes, checkboxes para múltiples selecciones
                     <div className="checkbox-group">
                       <input
                         type="checkbox"
@@ -229,7 +283,6 @@ const RegistrationForm = ({
                       <label htmlFor={`program-checkbox-${index}`}>{program}</label>
                     </div>
                   ) : (
-                    // Para Director y Decano, radio buttons para una única selección
                     <div className="radio-group">
                       <input
                         type="radio"
@@ -249,23 +302,32 @@ const RegistrationForm = ({
         </div>
       </div>
 
-      {/* Mostrar los programas seleccionados */}
       <div className="selected-programs">
-          {form.Programas.length > 0 && (
-            <ul>
+        {form.Programas.length > 0 && (
+          <ul>
             {form.Programas.map((program, index) => (
               <li key={index}>{typeof program === 'string' ? program : program.nombre}</li>
             ))}
-          </ul>          
-          )}
-        </div>
+          </ul>
+        )}
+      </div>
 
       <div className="button-container">
-        <Button color="success" type="submit" className="me-3">
+        <Button
+          color="success"
+          type="submit"
+          className="me-3"
+          onClick={editIndex === null ? handleSubmit : undefined}
+        >
           {editIndex !== null ? "Guardar cambios" : "Registrar"}
         </Button>
         {editIndex !== null && (
-          <Button color="danger" onClick={handleDelete}>
+          <Button
+            type="button"
+            color="danger"
+            className="btn-form"
+            onClick={() => handleDelete(form.Id)}
+          >
             Eliminar Usuario
           </Button>
         )}

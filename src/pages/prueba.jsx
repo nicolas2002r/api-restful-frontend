@@ -16,7 +16,7 @@ export const Prueba = (props, ref) => {
 
     const fetchTareaOptions = async (id) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/actividades/${id}/subactividades-tareas`);
+            const response = await axios.get(`https://api-restful-backend.onrender.com/api/actividades/${id}/subactividades-tareas`);
             return response.data; 
         } catch (error) {
             Swal.fire({
